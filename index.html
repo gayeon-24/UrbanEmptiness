@@ -1,0 +1,2260 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>도시의 빈칸 — 프로젝트 아카이빙</title>
+    
+    <!-- SEO & Metadata -->
+    <meta name="description" content="도시의 빈 구석구석에 방치된 무형·유형의 과부하 상태를 '쓰레기'로 규정하고 데이터 시각화와 정보 디자인을 통해 정돈의 가치를 탐구하는 디지털 아카이브 공간입니다.">
+    <meta name="keywords" content="도시의 빈칸, 도시 아카이브, 데이터 시각화, 정보 디자인, 빈집 데이터, 폐교 활용, 고령화 지표, 도시 소멸">
+    <meta property="og:title" content="도시의 빈칸 — 프로젝트 아카이빙">
+    <meta property="og:description" content="도시 구석구석에 방치된 무형·유형의 과부하 상태를 추적하고 분석하는 디지털 아카이브 공간입니다.">
+    <meta property="og:type" content="website">
+
+    <!-- Fonts & Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.css" />
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet" />
+    
+    <!-- Chart.js CDN -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+
+    <style>
+        /* ----------------------------------------------------
+           DESIGN SYSTEM & VARIABLES
+           ---------------------------------------------------- */
+        :root {
+            --bg: #F5F5F3;
+            --surface: rgba(255, 255, 255, 0.7);
+            --surface-opaque: #ffffff;
+            --text: #141412;
+            --muted: #6C6C68;
+            --border: rgba(20, 20, 18, 0.08);
+            --border-hover: rgba(20, 20, 18, 0.15);
+            --lime: #DFFE3D;
+            --lime-dark: #C5E22B;
+            --lime-light: rgba(223, 254, 61, 0.15);
+            --c-red: #E84A49;
+            --c-red-light: rgba(232, 74, 73, 0.1);
+            --c-amber: #F09E2B;
+            --c-amber-light: rgba(240, 158, 43, 0.1);
+            --c-blue: #3E8EDE;
+            --c-blue-light: rgba(62, 142, 222, 0.1);
+            --c-green: #209F76;
+            --c-green-light: rgba(32, 159, 118, 0.1);
+            --c-purple: #4D45E8;
+            --c-purple-light: rgba(77, 69, 232, 0.1);
+            --font-mono: 'DM Mono', monospace;
+            --font-sans: 'Pretendard', -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+            --font-display: 'Plus Jakarta Sans', var(--font-sans);
+            --transition-smooth: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+            --shadow-sm: 0 4px 20px rgba(0, 0, 0, 0.02);
+            --shadow-md: 0 10px 30px rgba(0, 0, 0, 0.04);
+            --shadow-lg: 0 20px 50px rgba(0, 0, 0, 0.06);
+        }
+
+        /* ----------------------------------------------------
+           BASE STYLES
+           ---------------------------------------------------- */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: var(--font-sans);
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+
+        body {
+            background: var(--bg);
+            color: var(--text);
+            overflow-x: hidden;
+            line-height: 1.5;
+        }
+
+        /* Grid Background Pattern Overlay */
+        body::before {
+            content: "";
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background-image: 
+                linear-gradient(var(--border) 1px, transparent 1px),
+                linear-gradient(90deg, var(--border) 1px, transparent 1px);
+            background-size: 50px 50px;
+            pointer-events: none;
+            z-index: -2;
+            opacity: 0.5;
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: var(--bg);
+        }
+        ::-webkit-scrollbar-thumb {
+            background: rgba(0, 0, 0, 0.1);
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: rgba(0, 0, 0, 0.2);
+        }
+
+        /* ----------------------------------------------------
+           NAVIGATION (GNB)
+           ---------------------------------------------------- */
+        header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            padding: 24px 50px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .logo {
+            font-family: var(--font-sans);
+            font-size: 1.05rem;
+            font-weight: 800;
+            letter-spacing: -0.03em;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: var(--surface-opaque);
+            padding: 8px 18px;
+            border-radius: 40px;
+            border: 1px solid var(--border);
+            box-shadow: var(--shadow-sm);
+            transition: var(--transition-smooth);
+        }
+
+        .logo::before {
+            content: '';
+            width: 10px;
+            height: 10px;
+            background: var(--lime);
+            border-radius: 50%;
+            box-shadow: 0 0 10px var(--lime);
+            transition: var(--transition-smooth);
+        }
+
+        .logo:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+            border-color: var(--border-hover);
+        }
+
+        .logo:hover::before {
+            transform: scale(1.3);
+            background: var(--text);
+            box-shadow: 0 0 12px var(--text);
+        }
+
+        nav ul {
+            display: flex;
+            list-style: none;
+            gap: 8px;
+            background: var(--surface);
+            padding: 6px;
+            border-radius: 40px;
+            backdrop-filter: blur(16px) saturate(180%);
+            -webkit-backdrop-filter: blur(16px) saturate(180%);
+            border: 1px solid var(--border);
+            box-shadow: var(--shadow-sm);
+        }
+
+        nav ul li a {
+            text-decoration: none;
+            color: var(--muted);
+            font-size: 0.85rem;
+            font-weight: 600;
+            padding: 8px 22px;
+            border-radius: 30px;
+            transition: var(--transition-smooth);
+            display: inline-block;
+        }
+
+        nav ul li a:hover {
+            color: var(--text);
+            background: rgba(0, 0, 0, 0.03);
+        }
+
+        nav ul li a.active {
+            background: var(--text);
+            color: #ffffff;
+            box-shadow: var(--shadow-sm);
+        }
+
+        /* ----------------------------------------------------
+           LAYOUT STRUCTURE
+           ---------------------------------------------------- */
+        main {
+            width: 100%;
+            min-height: 100vh;
+            position: relative;
+        }
+
+        section {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            min-height: 100vh;
+            padding: 140px 50px 80px;
+            display: flex;
+            flex-direction: column;
+            opacity: 0;
+            pointer-events: none;
+            transform: translateY(20px);
+            transition: opacity 0.6s cubic-bezier(0.16, 1, 0.3, 1), transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+            z-index: 1;
+        }
+
+        section.active {
+            opacity: 1;
+            pointer-events: auto;
+            transform: translateY(0);
+            position: relative;
+            z-index: 10;
+        }
+
+        .sec-head {
+            margin-bottom: 40px;
+            position: relative;
+        }
+
+        .sec-tag {
+            font-size: 0.75rem;
+            font-family: var(--font-mono);
+            color: var(--muted);
+            letter-spacing: 0.1em;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .sec-tag::before {
+            content: '';
+            width: 6px;
+            height: 6px;
+            background: var(--text);
+            border-radius: 50%;
+        }
+
+        .sec-title {
+            font-size: 2.5rem;
+            font-weight: 800;
+            letter-spacing: -0.03em;
+            color: var(--text);
+        }
+
+        /* ----------------------------------------------------
+           HOME PAGE
+           ---------------------------------------------------- */
+        #home {
+            justify-content: center;
+            align-items: flex-start;
+            padding-left: 10%;
+            height: 100vh;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .home-content-wrap {
+            max-width: 700px;
+            z-index: 2;
+        }
+
+        .home-tag {
+            font-size: 0.8rem;
+            font-family: var(--font-mono);
+            font-weight: 500;
+            background: var(--surface-opaque);
+            color: var(--text);
+            padding: 8px 18px;
+            border-radius: 30px;
+            border: 1px solid var(--border);
+            margin-bottom: 28px;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            box-shadow: var(--shadow-sm);
+            transition: var(--transition-smooth);
+        }
+
+        .home-tag::before {
+            content: '✦';
+            color: var(--c-green);
+            font-weight: bold;
+            animation: pulse-glow 2s infinite ease-in-out;
+        }
+
+        @keyframes pulse-glow {
+            0%, 100% { opacity: 0.4; transform: scale(0.9); }
+            50% { opacity: 1; transform: scale(1.1); }
+        }
+
+        .home-title {
+            font-family: var(--font-display);
+            font-size: 5.2rem;
+            font-weight: 800;
+            line-height: 1.05;
+            letter-spacing: -0.04em;
+            color: var(--text);
+            margin-bottom: 24px;
+        }
+
+        .home-title span {
+            color: var(--muted);
+            font-weight: 300;
+        }
+
+        .home-title::after {
+            content: '.';
+            color: var(--lime);
+            display: inline-block;
+            font-family: var(--font-sans);
+        }
+
+        .home-desc {
+            font-size: 1.05rem;
+            color: var(--muted);
+            max-width: 520px;
+            line-height: 1.7;
+            font-weight: 400;
+        }
+
+        /* Fluid Animated Blob Background */
+        .blob-container {
+            position: absolute;
+            right: 8%;
+            top: 20%;
+            width: 480px;
+            height: 480px;
+            z-index: -1;
+            pointer-events: none;
+            filter: blur(80px);
+            opacity: 0.65;
+            transition: var(--transition-smooth);
+        }
+
+        .blob {
+            position: absolute;
+            border-radius: 50%;
+            mix-blend-mode: multiply;
+            animation: blob-float 15s infinite alternate ease-in-out;
+        }
+
+        .blob-1 {
+            top: 0; left: 50px;
+            width: 320px; height: 320px;
+            background: linear-gradient(135deg, #DFFE3D 0%, #A6F0CF 100%);
+        }
+
+        .blob-2 {
+            bottom: 40px; right: 50px;
+            width: 280px; height: 280px;
+            background: linear-gradient(135deg, #3E8EDE 0%, #B5FFFC 100%);
+            animation-delay: -5s;
+        }
+
+        .blob-3 {
+            bottom: 80px; left: 80px;
+            width: 200px; height: 200px;
+            background: linear-gradient(135deg, #FF4E50 0%, #F9D423 100%);
+            animation-delay: -10s;
+            opacity: 0.5;
+        }
+
+        @keyframes blob-float {
+            0% { transform: translate(0px, 0px) scale(1) rotate(0deg); }
+            33% { transform: translate(30px, -50px) scale(1.1) rotate(120deg); }
+            66% { transform: translate(-20px, 20px) scale(0.95) rotate(240deg); }
+            100% { transform: translate(0px, 0px) scale(1) rotate(360deg); }
+        }
+
+        /* ----------------------------------------------------
+           ABOUT PAGE
+           ---------------------------------------------------- */
+        .about-grid {
+            display: grid;
+            grid-template-columns: 1.2fr 1fr;
+            gap: 60px;
+            max-width: 1200px;
+            margin-top: 20px;
+        }
+
+        .about-hero-text {
+            font-size: 1.45rem;
+            line-height: 1.7;
+            font-weight: 600;
+            color: var(--text);
+            letter-spacing: -0.02em;
+        }
+
+        .about-hero-text mark {
+            background: var(--lime-light);
+            color: inherit;
+            padding: 2px 6px;
+            border-bottom: 2px solid var(--lime-dark);
+        }
+
+        .about-sub-text {
+            color: var(--muted);
+            line-height: 1.8;
+            font-size: 1.05rem;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .about-stat-row {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 24px;
+            margin-top: 40px;
+            max-width: 1200px;
+        }
+
+        .about-stat-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-md);
+            padding: 24px;
+            transition: var(--transition-smooth);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .about-stat-card:hover {
+            transform: translateY(-4px);
+            border-color: var(--border-hover);
+            box-shadow: var(--shadow-md);
+        }
+
+        .about-stat-num {
+            font-family: var(--font-mono);
+            font-size: 2.2rem;
+            font-weight: 700;
+            margin-bottom: 4px;
+        }
+
+        .about-stat-lbl {
+            font-size: 0.8rem;
+            color: var(--muted);
+            font-weight: 500;
+        }
+
+        /* ----------------------------------------------------
+           ARCHIVE PAGE (DASHBOARD)
+           ---------------------------------------------------- */
+        .tab-wrap {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 35px;
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 12px;
+            max-width: 1200px;
+            flex-wrap: wrap;
+        }
+
+        .tab-btn {
+            background: none;
+            border: 1px solid transparent;
+            padding: 8px 18px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--muted);
+            cursor: pointer;
+            border-radius: 30px;
+            transition: var(--transition-smooth);
+        }
+
+        .tab-btn:hover {
+            color: var(--text);
+            background: rgba(0, 0, 0, 0.03);
+        }
+
+        .tab-btn.active {
+            background: var(--text);
+            color: #ffffff;
+            font-weight: 700;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .tab-content {
+            display: none;
+            max-width: 1200px;
+            animation: content-enter 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        @keyframes content-enter {
+            from { opacity: 0; transform: translateY(12px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Dashboard Components */
+        .insight {
+            background: var(--surface);
+            border-left: 4px solid var(--text);
+            border-radius: 4px;
+            padding: 16px 24px;
+            margin-bottom: 30px;
+            font-size: 0.95rem;
+            font-weight: 500;
+            line-height: 1.6;
+            color: var(--text);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border-top: 1px solid var(--border);
+            border-right: 1px solid var(--border);
+            border-bottom: 1px solid var(--border);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .metrics {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 16px;
+            margin-bottom: 30px;
+        }
+
+        .m-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-md);
+            padding: 20px 24px;
+            box-shadow: var(--shadow-sm);
+            transition: var(--transition-smooth);
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            min-height: 120px;
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+        }
+
+        .m-card:hover {
+            transform: translateY(-4px);
+            border-color: var(--border-hover);
+            box-shadow: var(--shadow-md);
+        }
+
+        .m-card.acc {
+            background: var(--lime);
+            border-color: transparent;
+            box-shadow: 0 10px 25px var(--lime-shadow);
+        }
+
+        .m-card.acc:hover {
+            background: var(--lime-hover);
+            box-shadow: 0 14px 30px var(--lime-shadow);
+        }
+
+        .m-card .lbl {
+            font-size: 0.7rem;
+            font-weight: 700;
+            color: var(--muted);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-bottom: 8px;
+        }
+
+        .m-card.acc .lbl {
+            color: rgba(20, 20, 18, 0.6);
+        }
+
+        .m-card .val {
+            font-family: var(--font-display);
+            font-size: 1.8rem;
+            font-weight: 800;
+            letter-spacing: -0.03em;
+            color: var(--text);
+            line-height: 1.1;
+        }
+
+        .m-card .sb {
+            font-size: 0.7rem;
+            font-family: var(--font-mono);
+            color: var(--muted);
+            margin-top: 10px;
+        }
+
+        .m-card.acc .sb {
+            color: rgba(20, 20, 18, 0.7);
+        }
+
+        .panel {
+            background: var(--surface-opaque);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-md);
+            padding: 28px;
+            margin-bottom: 24px;
+            box-shadow: var(--shadow-sm);
+            transition: var(--transition-smooth);
+        }
+
+        .panel:hover {
+            box-shadow: var(--shadow-md);
+            border-color: var(--border-hover);
+        }
+
+        .p-title {
+            font-size: 1.05rem;
+            font-weight: 700;
+            color: var(--text);
+            margin-bottom: 4px;
+            letter-spacing: -0.01em;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .p-sub {
+            font-size: 0.75rem;
+            color: var(--muted);
+            margin-bottom: 24px;
+            font-family: var(--font-mono);
+        }
+
+        .two-col {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
+        }
+
+        .three-col {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 24px;
+        }
+
+        /* Tables & Lists */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.8rem;
+            text-align: left;
+        }
+
+        thead tr {
+            border-bottom: 2px solid var(--text);
+        }
+
+        th {
+            padding: 12px 14px;
+            font-weight: 700;
+            color: var(--text);
+            font-family: var(--font-sans);
+            text-transform: uppercase;
+            font-size: 0.75rem;
+            letter-spacing: 0.05em;
+        }
+
+        td {
+            padding: 14px 14px;
+            border-bottom: 1px solid var(--border);
+            color: var(--text);
+            font-weight: 500;
+        }
+
+        tbody tr {
+            transition: var(--transition-smooth);
+        }
+
+        tbody tr:hover {
+            background: rgba(0, 0, 0, 0.01);
+        }
+
+        tbody tr:last-child td {
+            border-bottom: none;
+        }
+
+        .badge {
+            display: inline-block;
+            font-size: 0.65rem;
+            font-family: var(--font-mono);
+            padding: 3px 8px;
+            border-radius: 4px;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+
+        .badge.red {
+            background: var(--c-red-light);
+            color: var(--c-red);
+            border: 1px solid rgba(232, 74, 73, 0.2);
+        }
+
+        .badge.green {
+            background: var(--c-green-light);
+            color: var(--c-green);
+            border: 1px solid rgba(32, 159, 118, 0.2);
+        }
+
+        /* Rank Item List */
+        .rank-wrap {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .rank-item {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            padding: 12px 16px;
+            background: var(--bg);
+            border-radius: var(--radius-sm);
+            border: 1px solid transparent;
+            transition: var(--transition-smooth);
+        }
+
+        .rank-item:hover {
+            background: var(--surface-opaque);
+            border-color: var(--border-hover);
+            transform: translateX(4px);
+        }
+
+        .r-num {
+            font-family: var(--font-mono);
+            font-weight: 700;
+            color: var(--muted);
+            font-size: 0.85rem;
+            width: 20px;
+        }
+
+        .r-name {
+            font-weight: 600;
+            font-size: 0.85rem;
+            width: 80px;
+        }
+
+        .r-bar-bg {
+            flex-grow: 1;
+            height: 6px;
+            background: rgba(0, 0, 0, 0.06);
+            border-radius: 3px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .r-bar {
+            height: 100%;
+            border-radius: 3px;
+            width: 0%; /* JS-driven entry animation */
+            transition: width 1s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .r-val {
+            font-family: var(--font-mono);
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: var(--text);
+            margin-left: 12px;
+            width: 45px;
+            text-align: right;
+        }
+
+        /* Observation Log Section */
+        .obs-filter-wrap {
+            display: flex;
+            gap: 6px;
+            margin-bottom: 20px;
+        }
+
+        .obs-filter-btn {
+            background: var(--bg);
+            border: 1px solid var(--border);
+            padding: 4px 12px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: var(--muted);
+            border-radius: 20px;
+            cursor: pointer;
+            transition: var(--transition-smooth);
+        }
+
+        .obs-filter-btn:hover, .obs-filter-btn.active {
+            background: var(--text);
+            color: #ffffff;
+            border-color: var(--text);
+        }
+
+        .obs-list {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            max-height: 270px;
+            overflow-y: auto;
+            padding-right: 4px;
+        }
+
+        .obs-card {
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            padding: 14px 18px;
+            font-size: 0.8rem;
+            background: #FAFAFA;
+            transition: var(--transition-smooth);
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .obs-card:hover {
+            transform: translateY(-2px);
+            background: #ffffff;
+            border-color: var(--border-hover);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .obs-card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .obs-dt {
+            font-family: var(--font-mono);
+            color: var(--muted);
+            font-size: 0.75rem;
+            font-weight: 500;
+        }
+
+        .obs-tp {
+            display: inline-block;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-size: 0.65rem;
+            font-weight: 700;
+            color: #ffffff;
+        }
+
+        .obs-desc {
+            color: var(--text);
+            font-weight: 500;
+            line-height: 1.4;
+        }
+
+        /* Comparison Grid */
+        .comp-grid {
+            display: grid;
+            grid-template-columns: 120px 1fr 1fr;
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            overflow: hidden;
+            font-size: 0.8rem;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .c-hd {
+            background: var(--bg);
+            padding: 14px 18px;
+            font-weight: 700;
+            color: var(--text);
+            border-bottom: 2px solid var(--text);
+            text-transform: uppercase;
+            font-size: 0.75rem;
+            letter-spacing: 0.02em;
+        }
+
+        .c-lbl {
+            padding: 14px 18px;
+            border-bottom: 1px solid var(--border);
+            background: rgba(0, 0, 0, 0.01);
+            font-weight: 700;
+            color: var(--muted);
+            display: flex;
+            align-items: center;
+        }
+
+        .c-cell {
+            padding: 14px 18px;
+            border-bottom: 1px solid var(--border);
+            border-left: 1px solid var(--border);
+            line-height: 1.6;
+            color: var(--text);
+            font-weight: 500;
+            transition: var(--transition-smooth);
+        }
+
+        .c-cell:hover {
+            background: rgba(0, 0, 0, 0.01);
+        }
+
+        .comp-grid div:nth-last-child(-n+3) {
+            border-bottom: none;
+        }
+
+        /* Infographic Mechanism Grid */
+        .ty-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 16px;
+        }
+
+        .ty-box {
+            border: 1px solid var(--border);
+            border-radius: var(--radius-md);
+            overflow: hidden;
+            background: #ffffff;
+            font-size: 0.8rem;
+            transition: var(--transition-smooth);
+            display: flex;
+            flex-direction: column;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .ty-box:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-md);
+            border-color: var(--border-hover);
+        }
+
+        .ty-box .hd {
+            padding: 14px 18px;
+            font-weight: 700;
+            font-size: 0.85rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .ty-box .hd::before {
+            content: '●';
+            font-size: 0.6rem;
+        }
+
+        .ty-box .bd {
+            padding: 18px;
+            color: var(--muted);
+            line-height: 1.6;
+            font-weight: 500;
+            flex-grow: 1;
+            background: #ffffff;
+        }
+
+        /* ----------------------------------------------------
+           TEAM MEMBERS PAGE (WORK)
+           ---------------------------------------------------- */
+        .work-grid {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 20px;
+            max-width: 1200px;
+            margin-top: 20px;
+        }
+
+        .work-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-md);
+            padding: 24px;
+            height: 320px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            box-shadow: var(--shadow-sm);
+            transition: var(--transition-smooth);
+            position: relative;
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            overflow: hidden;
+        }
+
+        /* Decorative background element inside card */
+        .work-card::after {
+            content: "";
+            position: absolute;
+            bottom: -30px;
+            right: -30px;
+            width: 120px;
+            height: 120px;
+            background: var(--border);
+            border-radius: 50%;
+            opacity: 0.2;
+            transition: var(--transition-smooth);
+            pointer-events: none;
+        }
+
+        .work-card:hover {
+            transform: translateY(-8px);
+            background: var(--surface-opaque);
+            border-color: var(--border-hover);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .work-card:hover::after {
+            transform: scale(1.5);
+            background: var(--lime);
+            opacity: 0.4;
+        }
+
+        .work-meta {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .work-role {
+            font-size: 0.75rem;
+            color: var(--muted);
+            line-height: 1.5;
+            font-weight: 600;
+            min-height: 36px;
+        }
+
+        .work-name {
+            font-size: 1.35rem;
+            font-weight: 800;
+            letter-spacing: -0.02em;
+            color: var(--text);
+            margin-top: 6px;
+        }
+
+        .work-link {
+            width: 38px;
+            height: 38px;
+            background: var(--text);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #ffffff;
+            text-decoration: none;
+            font-size: 0.85rem;
+            transition: var(--transition-smooth);
+            z-index: 2;
+        }
+
+        .work-card:hover .work-link {
+            background: var(--lime);
+            color: var(--text);
+            transform: scale(1.1) rotate(45deg);
+            box-shadow: 0 4px 15px rgba(223, 254, 61, 0.4);
+        }
+
+        /* ----------------------------------------------------
+           RESPONSIVE MEDIA QUERIES
+           ---------------------------------------------------- */
+        @media (max-width: 1100px) {
+            .work-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+            .ty-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 900px) {
+            header {
+                padding: 16px 24px;
+            }
+            
+            section {
+                padding: 110px 24px 60px;
+            }
+
+            .logo {
+                padding: 6px 14px;
+                font-size: 0.95rem;
+            }
+
+            nav ul li a {
+                padding: 6px 14px;
+                font-size: 0.75rem;
+            }
+
+            .home-title {
+                font-size: 3.5rem;
+            }
+
+            .about-grid {
+                grid-template-columns: 1fr;
+                gap: 30px;
+            }
+
+            .about-stat-row {
+                grid-template-columns: 1fr;
+                gap: 16px;
+            }
+
+            .metrics {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .two-col, .three-col {
+                grid-template-columns: 1fr;
+                gap: 16px;
+            }
+
+            .comp-grid {
+                grid-template-columns: 90px 1fr 1fr;
+                font-size: 0.75rem;
+            }
+
+            .ty-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .work-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 600px) {
+            .home-title {
+                font-size: 2.8rem;
+            }
+
+            .metrics {
+                grid-template-columns: 1fr;
+            }
+
+            .work-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Floating GNB -->
+    <header>
+        <div class="logo" id="main-logo" onclick="navTo('home')" aria-label="도시의 빈칸 메인페이지로 이동">도시의 빈칸</div>
+        <nav>
+            <ul>
+                <li><a href="#about" class="n-lnk" onclick="navTo('about')" id="nav-about">About</a></li>
+                <li><a href="#archive" class="n-lnk" onclick="navTo('archive')" id="nav-archive">Archive</a></li>
+                <li><a href="#work" class="n-lnk" onclick="navTo('work')" id="nav-work">Work</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main>
+        <!-- 00 / HOME SECTION -->
+        <section id="home" class="active">
+            <div class="blob-container">
+                <div class="blob blob-1" id="b1"></div>
+                <div class="blob blob-2" id="b2"></div>
+                <div class="blob blob-3" id="b3"></div>
+            </div>
+            
+            <div class="home-content-wrap">
+                <div class="home-tag">Power Stations for a Green Planet</div>
+                <h1 class="home-title">Next Generation.<br><span>Urban Emptiness</span></h1>
+                <p class="home-desc">도시 구석구석에 방치된 무형·유형의 과부하 상태를 '쓰레기'로 규정하고 데이터 시각화와 정보 디자인을 통해 정돈의 가치를 탐구합니다.</p>
+            </div>
+        </section>
+
+        <!-- 01 / ABOUT SECTION -->
+        <section id="about">
+            <div class="sec-head">
+                <div class="sec-tag">01 / OVERVIEW</div>
+                <h2 class="sec-title">프로젝트 소개</h2>
+            </div>
+            
+            <div class="about-grid">
+                <div class="about-hero-text">
+                    "도시의 빈칸"은 비어 있는 공간이 단순한 공백이 아니라 <mark>사회적 격차와 구조적 소멸</mark>이 남긴 흔적임을 추적하는 디지털 아카이브 공간입니다.
+                </div>
+                <div class="about-sub-text">
+                    <p>기본 거시 데이터부터 수집된 시간적 흐름, 환경적 변수, 마이크로 지역 매트릭스, 그리고 세밀한 현장 관찰을 기반으로 한 사회/심리적 요인까지 다각도의 디자인 실험을 거쳐 정돈된 레이아웃으로 복합 시각화 대시보드를 선사합니다.</p>
+                    <p>우리는 방치되고 버려진 빈 공간의 이면을 조명하여, 현대 도시가 해결해야 할 공공자산의 기능 소멸 및 인구 붕괴 문제를 새로운 아카이빙 시각에서 재정의합니다.</p>
+                </div>
+            </div>
+
+            <div class="about-stat-row">
+                <div class="about-stat-card">
+                    <div class="about-stat-num" style="color: var(--c-purple);">118k</div>
+                    <div class="about-stat-lbl">전국 총 빈집 수 (가구)</div>
+                </div>
+                <div class="about-stat-card">
+                    <div class="about-stat-num" style="color: var(--c-red);">3,980</div>
+                    <div class="about-stat-lbl">전국 누적 폐교 자산 수</div>
+                </div>
+                <div class="about-stat-card">
+                    <div class="about-stat-num" style="color: var(--c-green);">50%</div>
+                    <div class="about-stat-lbl">서울 소상공인 5년 생존율</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 02 / ARCHIVE SECTION (DASHBOARD) -->
+        <section id="archive">
+            <div class="sec-head">
+                <div class="sec-tag">02 / DATA DASHBOARD</div>
+                <h2 class="sec-title">공간 쓰레기 아카이브</h2>
+            </div>
+            
+            <!-- Dashboard Tab Nav -->
+            <div class="tab-wrap" role="tablist">
+                <button class="tab-btn active" id="tab-btn-d1" onclick="tabSw('d1')" role="tab" aria-selected="true" aria-controls="d1">기본 통계</button>
+                <button class="tab-btn" id="tab-btn-d2" onclick="tabSw('d2')" role="tab" aria-selected="false" aria-controls="d2">시간적 변화</button>
+                <button class="tab-btn" id="tab-btn-d3" onclick="tabSw('d3')" role="tab" aria-selected="false" aria-controls="d3">공간/환경 요인</button>
+                <button class="tab-btn" id="tab-btn-d4" onclick="tabSw('d4')" role="tab" aria-selected="false" aria-controls="d4">지역별 현황</button>
+                <button class="tab-btn" id="tab-btn-d5" onclick="tabSw('d5')" role="tab" aria-selected="false" aria-controls="d5">사회/심리 요인</button>
+            </div>
+
+            <!-- TAB 1: 기본 통계 -->
+            <div id="d1" class="tab-content active" role="tabpanel" aria-labelledby="tab-btn-d1">
+                <div class="insight">구조적 불균형이 만들어낸 소멸의 신호 — 전국 시도의 빈집 데이터를 기반으로 거시 현황을 추적합니다.</div>
+                
+                <div class="metrics">
+                    <div class="m-card acc">
+                        <div>
+                            <div class="lbl">전국 빈집 총계</div>
+                            <div class="val" id="m1-1">118,180</div>
+                        </div>
+                        <div class="sb">가구 기준 합산</div>
+                    </div>
+                    <div class="m-card">
+                        <div>
+                            <div class="lbl">최다 빈집 지역</div>
+                            <div class="val" id="m1-2" style="font-size: 1.6rem; font-weight: 700;">전라남도</div>
+                        </div>
+                        <div class="sb">20,006 가구</div>
+                    </div>
+                    <div class="m-card">
+                        <div>
+                            <div class="lbl">수도권 빈집</div>
+                            <div class="val" id="m1-3">17,603</div>
+                        </div>
+                        <div class="sb">서울·경기·인천</div>
+                    </div>
+                    <div class="m-card">
+                        <div>
+                            <div class="lbl">최소 빈집 지역</div>
+                            <div class="val" id="m1-4" style="font-size: 1.6rem; font-weight: 700;">세종시</div>
+                        </div>
+                        <div class="sb">688 가구</div>
+                    </div>
+                </div>
+
+                <div class="panel">
+                    <div class="p-title">시도별 빈집 분포 지표</div>
+                    <div class="p-sub">2024년 정밀 전수 데이터 (가구)</div>
+                    <div style="position:relative; height:340px;"><canvas id="cBin"></canvas></div>
+                </div>
+
+                <div class="two-col">
+                    <div class="panel">
+                        <div class="p-title">수도권 vs 비수도권 비중</div>
+                        <div class="p-sub">전체 빈집 중 권역별 점유 비율 (%)</div>
+                        <div style="position:relative; height:180px;"><canvas id="cDonut"></canvas></div>
+                    </div>
+                    <div class="panel">
+                        <div class="p-title">대권역별 통합 스케일</div>
+                        <div class="p-sub">주요 권역별 총합 규모 (가구)</div>
+                        <div style="position:relative; height:180px;"><canvas id="cReg"></canvas></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TAB 2: 시간적 변화 -->
+            <div id="d2" class="tab-content" role="tabpanel" aria-labelledby="tab-btn-d2">
+                <div class="insight">상권의 생성과 소멸 속도 추적 — 개/폐업 변동률과 미활용 폐교 자산의 소멸 타임라인입니다.</div>
+                
+                <div class="metrics">
+                    <div class="m-card acc">
+                        <div>
+                            <div class="lbl">최근 개업 (1Q)</div>
+                            <div class="val" id="m2-1">11,494</div>
+                        </div>
+                        <div class="sb">서울시 상권 기준</div>
+                    </div>
+                    <div class="m-card">
+                        <div>
+                            <div class="lbl">최근 폐업 (1Q)</div>
+                            <div class="val" id="m2-2">19,361</div>
+                        </div>
+                        <div class="sb">상권 이탈 점포</div>
+                    </div>
+                    <div class="m-card">
+                        <div>
+                            <div class="lbl">5년 평균 생존율</div>
+                            <div class="val" id="m2-3">50.0%</div>
+                        </div>
+                        <div class="sb">상권 장기 방어선</div>
+                    </div>
+                    <div class="m-card">
+                        <div>
+                            <div class="lbl">전국 폐교 방치율</div>
+                            <div class="val" id="m2-4">9.0%</div>
+                        </div>
+                        <div class="sb">교육 자산 기능 소멸</div>
+                    </div>
+                </div>
+
+                <div class="two-col">
+                    <div class="panel">
+                        <div class="p-title">개/폐업수 변동 추이</div>
+                        <div class="p-sub">서울 상권 변동 상황</div>
+                        <div style="overflow-x: auto;">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>분기</th>
+                                        <th>개업 (점포)</th>
+                                        <th>폐업 (점포)</th>
+                                        <th>폐업률 변동</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>2023 1Q</td>
+                                        <td>21,766</td>
+                                        <td>19,643</td>
+                                        <td><span class="badge red">3.0%</span></td>
+                                    </tr>
+                                    <tr>
+                                        <td>2024 1Q</td>
+                                        <td>17,931</td>
+                                        <td>21,735</td>
+                                        <td><span class="badge red">3.3%</span></td>
+                                    </tr>
+                                    <tr>
+                                        <td>2025 1Q</td>
+                                        <td>11,494</td>
+                                        <td>19,361</td>
+                                        <td><span class="badge green">1.8%</span></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <div class="panel">
+                        <div class="p-title">상권 연차별 생존 필터</div>
+                        <div class="p-sub">연도별 추적 소상공인 잔존율</div>
+                        <div style="overflow-x: auto;">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>기준년도</th>
+                                        <th>1년 생존율</th>
+                                        <th>3년 생존율</th>
+                                        <th>5년 생존율</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>2023 1Q</td>
+                                        <td>79.8%</td>
+                                        <td>60.0%</td>
+                                        <td>47.7%</td>
+                                    </tr>
+                                    <tr>
+                                        <td>2024 1Q</td>
+                                        <td>80.8%</td>
+                                        <td>61.0%</td>
+                                        <td>48.1%</td>
+                                    </tr>
+                                    <tr>
+                                        <td>2025 1Q</td>
+                                        <td>80.6%</td>
+                                        <td>59.5%</td>
+                                        <td><span class="badge green">50.0%</span></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="panel">
+                    <div class="p-title">서울시 상권 개업 vs 폐업 흐름 및 생존 곡선 데이터</div>
+                    <div class="p-sub">최근 3개년 동기 대비 비교 지표 (개수)</div>
+                    <div style="position:relative; height:240px;"><canvas id="cBiz"></canvas></div>
+                </div>
+
+                <div class="panel">
+                    <div class="p-title">전국 누적 폐교 자산 연도별 누적 활용 현황</div>
+                    <div class="p-sub">전체 폐교 시설의 활용·처분·방치 비율 (개수)</div>
+                    <div style="position:relative; height:220px;"><canvas id="cSch"></canvas></div>
+                </div>
+            </div>
+
+            <!-- TAB 3: 공간/환경 요인 -->
+            <div id="d3" class="tab-content" role="tabpanel" aria-labelledby="tab-btn-d3">
+                <div class="insight">인구 구조의 변동이 미치는 환경 파급력 — 고령인구 집중도와 폐교 공간의 불균형 분포 상태입니다.</div>
+                
+                <div class="metrics">
+                    <div class="m-card acc">
+                        <div>
+                            <div class="lbl">누적 폐교 총량</div>
+                            <div class="val" id="m3-1">3,980개</div>
+                        </div>
+                        <div class="sb">1982년 이후 기록</div>
+                    </div>
+                    <div class="m-card">
+                        <div>
+                            <div class="lbl">도지역 집중률</div>
+                            <div class="val" id="m3-2">94.2%</div>
+                        </div>
+                        <div class="sb">시지역 231개 동</div>
+                    </div>
+                    <div class="m-card">
+                        <div>
+                            <div class="lbl">초고령 진입 시군구</div>
+                            <div class="val" id="m3-3">109곳</div>
+                        </div>
+                        <div class="sb">전국 자치구 중 41.8%</div>
+                    </div>
+                    <div class="m-card">
+                        <div>
+                            <div class="lbl">최고 고령화 지역</div>
+                            <div class="val" id="m3-4" style="font-size: 1.6rem; font-weight: 700;">의성군</div>
+                        </div>
+                        <div class="sb">40.8% 돌파</div>
+                    </div>
+                </div>
+
+                <div class="two-col">
+                    <div class="panel">
+                        <div class="p-title">고령인구 비율 최상위 취약 지점 리스트</div>
+                        <div class="p-sub">전국 시군구 단위 기준 고령비율 TOP 4 (%)</div>
+                        <div class="rank-wrap">
+                            <div class="rank-item">
+                                <span class="r-num">1</span>
+                                <span class="r-name">경북 의성</span>
+                                <div class="r-bar-bg">
+                                    <div class="r-bar" style="background: var(--c-red);" data-val="90.8"></div>
+                                </div>
+                                <span class="r-val">40.8%</span>
+                            </div>
+                            <div class="rank-item">
+                                <span class="r-num">2</span>
+                                <span class="r-name">전남 고흥</span>
+                                <div class="r-bar-bg">
+                                    <div class="r-bar" style="background: var(--c-red);" data-val="88.5"></div>
+                                </div>
+                                <span class="r-val">40.5%</span>
+                            </div>
+                            <div class="rank-item">
+                                <span class="r-num">3</span>
+                                <span class="r-name">경북 군위</span>
+                                <div class="r-bar-bg">
+                                    <div class="r-bar" style="background: var(--c-amber);" data-val="85.2"></div>
+                                </div>
+                                <span class="r-val">39.7%</span>
+                            </div>
+                            <div class="rank-item">
+                                <span class="r-num">4</span>
+                                <span class="r-name">경남 합천</span>
+                                <div class="r-bar-bg">
+                                    <div class="r-bar" style="background: var(--c-amber);" data-val="82.4"></div>
+                                </div>
+                                <span class="r-val">38.9%</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="panel">
+                        <div class="p-title">교육 인프라 붕괴 비율 (도역 vs 시역)</div>
+                        <div class="p-sub">도지역 폐교(3749개) vs 시지역 폐교(231개) 비중 비교</div>
+                        <div style="position:relative; height:180px;"><canvas id="cSchPie"></canvas></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TAB 4: 지역별 현황 -->
+            <div id="d4" class="tab-content" role="tabpanel" aria-labelledby="tab-btn-d4">
+                <div class="insight">도시 스케일에 따른 미시적 공실 원인 격차 — 서울 내부 핫스팟 비교군 및 공간 정비 알고리즘입니다.</div>
+                
+                <div class="panel">
+                    <div class="p-title">용산구 vs 영등포구 공간 방치 매트릭스 비교</div>
+                    <div class="p-sub">서울 주요 도심 자치구별 방치 특징 비교 분석</div>
+                    <div class="comp-grid">
+                        <div class="c-hd">비교 지표</div>
+                        <div class="c-hd" style="color:var(--c-purple);">용산구 (Yongsan)</div>
+                        <div class="c-hd" style="color:var(--c-green);">영등포구 (Yeongdeungpo)</div>
+                        
+                        <div class="c-lbl">주요 공실 원인</div>
+                        <div class="c-cell">지나치게 높은 고임대료 진입 장벽</div>
+                        <div class="c-cell">건물 노후화 및 중심 상권의 분산 이동</div>
+                        
+                        <div class="c-lbl">공간 소모 속성</div>
+                        <div class="c-cell">팝업스토어 위주 트렌디형 단기 공간 소비</div>
+                        <div class="c-cell">대형 업무 빌딩 및 배후 구도심 전통 상권의 복합 적재</div>
+                    </div>
+                </div>
+
+                <div class="two-col">
+                    <div class="panel">
+                        <div class="p-title">도시재생 뉴딜 규모별 분배율</div>
+                        <div class="p-sub">대도시(162곳) · 중소도시(122곳) · 소도시(27곳) 사업비 배분</div>
+                        <div style="position:relative; height:180px;"><canvas id="cRegen"></canvas></div>
+                    </div>
+                    <div class="panel">
+                        <div class="p-title">연도별 정비 실적 가중 유형</div>
+                        <div class="p-sub">시도 단위 빈집 단순철거 vs 공공활용 정비 실적 비교</div>
+                        <div style="position:relative; height:180px;"><canvas id="cRepair"></canvas></div>
+                    </div>
+                </div>
+
+                <div class="panel">
+                    <div class="p-title" style="margin-bottom: 20px;">공간 쓰레기 정비 4대 메커니즘 도식</div>
+                    <div class="ty-grid">
+                        <div class="ty-box">
+                            <div class="hd" style="background:#EEEDFE; color:#3C3489;">연계 정비</div>
+                            <div class="bd">도시재생 특화 특구 설정 및 소규모 자율 주택 개발 연동을 통한 지역 연계 활성화</div>
+                        </div>
+                        <div class="ty-box">
+                            <div class="hd" style="background:#E6F1FB; color:#185FA5;">안전 관리</div>
+                            <div class="bd">공실 붕괴 위험도 평가 후 구조 보강, 경찰·소방 연계 야간 안심 순찰 상시 모니터링</div>
+                        </div>
+                        <div class="ty-box">
+                            <div class="hd" style="background:#FCEBEB; color:#A32D2D;">직권 철거</div>
+                            <div class="bd">안전 등급 하위 방치물에 대한 직권 철거 조치 후, 개방형 쉼터 또는 공공 쌈지 주차장 조성</div>
+                        </div>
+                        <div class="ty-box">
+                            <div class="hd" style="background:#EAF3DE; color:#3B6D11;">공공 활용</div>
+                            <div class="bd">지자체 매입 후 마을 텃밭, 커뮤니티 도서관 및 스타트업/청년 융합 공간 리모델링</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TAB 5: 사회/심리 요인 -->
+            <div id="d5" class="tab-content" role="tabpanel" aria-labelledby="tab-btn-d5">
+                <div class="insight">단순한 공백을 넘어선 사회적 단절의 단면 — 생산성 역전 현상과 생생한 필드 트래킹 기록입니다.</div>
+                
+                <div class="metrics">
+                    <div class="m-card acc">
+                        <div>
+                            <div class="lbl">서울 노령화 (2024)</div>
+                            <div class="val" id="m5-1">219.5</div>
+                        </div>
+                        <div class="sb">특광역시 중 최고 속도 증가</div>
+                    </div>
+                    <div class="m-card">
+                        <div>
+                            <div class="lbl">부산 노령화 지수</div>
+                            <div class="val" id="m5-2">244.0</div>
+                        </div>
+                        <div class="sb">전국 최고 임계점 진입</div>
+                    </div>
+                    <div class="m-card">
+                        <div>
+                            <div class="lbl">수도권 생산 비율</div>
+                            <div class="val" id="m5-3">52.53%</div>
+                        </div>
+                        <div class="sb">비수도권 격차 심화 곡선</div>
+                    </div>
+                    <div class="m-card">
+                        <div>
+                            <div class="lbl">광주 노령화 지수</div>
+                            <div class="val" id="m5-4">146.3</div>
+                        </div>
+                        <div class="sb">남부권 거점 도시 쇠퇴 신호</div>
+                    </div>
+                </div>
+
+                <div class="panel">
+                    <div class="p-title">수도권 vs 비수도권 총생산 비율 역전 추이 (2000 ~ 2020)</div>
+                    <div class="p-sub">전국 총생산(GDP) 대비 권역별 총합 비율 변동 (%)</div>
+                    <div style="position:relative; height:240px;"><canvas id="cGdp"></canvas></div>
+                </div>
+
+                <div class="two-col">
+                    <div class="panel">
+                        <div class="p-title">주요 거점 광역시별 노령화지수 비교 차트</div>
+                        <div class="p-sub">전국 주요 특별·광역시 2024년 고령화 지표 비교</div>
+                        <div style="position:relative; height:280px;"><canvas id="cAge"></canvas></div>
+                    </div>
+                    
+                    <div class="panel">
+                        <div class="p-title" style="margin-bottom: 12px;">일주일간의 필드 트래킹 레포트</div>
+                        
+                        <!-- Observation Log Filters -->
+                        <div class="obs-filter-wrap">
+                            <button class="obs-filter-btn active" onclick="filterObs('all')">전체</button>
+                            <button class="obs-filter-btn" onclick="filterObs('trash')">쓰레기 투기</button>
+                            <button class="obs-filter-btn" onclick="filterObs('biz')">폐업 상권</button>
+                            <button class="obs-filter-btn" onclick="filterObs('long')">장기 방치</button>
+                        </div>
+
+                        <!-- Observation Log Cards -->
+                        <div class="obs-list" id="obs-list-container">
+                            <div class="obs-card" data-cat="trash">
+                                <div class="obs-card-header">
+                                    <span class="obs-dt">4.24 · 단남-생활동포구 A 빈터</span>
+                                    <span class="obs-tp" style="background:var(--c-red);">쓰레기 투기</span>
+                                </div>
+                                <div class="obs-desc">외벽 붕괴 방치 흔적 및 폐기물 불법 무단 적치로 인한 경계 마비 현상 목격</div>
+                            </div>
+                            <div class="obs-card" data-cat="biz">
+                                <div class="obs-card-header">
+                                    <span class="obs-dt">4.24 · 공연역 주변 골목</span>
+                                    <span class="obs-tp" style="background:var(--c-amber);">폐업 상권</span>
+                                </div>
+                                <div class="obs-desc">핵심 상권 기능 축소 및 이탈 점포 증가로 밤거리 유동 인구 단절 구역 고착화</div>
+                            </div>
+                            <div class="obs-card" data-cat="long">
+                                <div class="obs-card-header">
+                                    <span class="obs-dt">4.26 · 구 플래리스 골목</span>
+                                    <span class="obs-tp" style="background:var(--c-red);">장기 방치</span>
+                                </div>
+                                <div class="obs-desc">안전 펜스 노후 및 보행 가치 저하로 청소년 탈선 우려 지역 분류 및 미관 훼손도 심각</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 03 / TEAM MEMBERS SECTION (WORK) -->
+        <section id="work">
+            <div class="sec-head">
+                <div class="sec-tag">03 / TEAM MEMBERS</div>
+                <h2 class="sec-title">개별 결과물 아카이브</h2>
+            </div>
+            
+            <div class="work-grid">
+                <div class="work-card">
+                    <div class="work-meta">
+                        <p class="sec-tag">MEMBER 01</p>
+                        <h3 class="work-name">박소율</h3>
+                        <p class="work-role">데이터 정제 & 거시적 통계 분석 담당</p>
+                    </div>
+                    <a href="#member-01" class="work-link" aria-label="박소율 결과물 바로가기">↗</a>
+                </div>
+                
+                <div class="work-card">
+                    <div class="work-meta">
+                        <p class="sec-tag">MEMBER 02</p>
+                        <h3 class="work-name">류다경</h3>
+                        <p class="work-role">공간 트래킹 & 실태 탐사 일지 기록 담당</p>
+                    </div>
+                    <a href="#member-02" class="work-link" aria-label="류다경 결과물 바로가기">↗</a>
+                </div>
+                
+                <div class="work-card">
+                    <div class="work-meta">
+                        <p class="sec-tag">MEMBER 03</p>
+                        <h3 class="work-name">김서원</h3>
+                        <p class="work-role">대시보드 UI 기획 & 정보 디자인 담당</p>
+                    </div>
+                    <a href="#member-03" class="work-link" aria-label="김서원 결과물 바로가기">↗</a>
+                </div>
+                
+                <div class="work-card">
+                    <div class="work-meta">
+                        <p class="sec-tag">MEMBER 04</p>
+                        <h3 class="work-name">이하윤</h3>
+                        <p class="work-role">인포그래픽 설계 & 정비 알고리즘 시각화 담당</p>
+                    </div>
+                    <a href="#member-04" class="work-link" aria-label="이하윤 결과물 바로가기">↗</a>
+                </div>
+                
+                <div class="work-card">
+                    <div class="work-meta">
+                        <p class="sec-tag">MEMBER 05</p>
+                        <h3 class="work-name">이가연</h3>
+                        <p class="work-role">미디어 아카이빙 비디오 & 포스터 아트 디렉션</p>
+                    </div>
+                    <a href="#member-05" class="work-link" aria-label="이가연 결과물 바로가기">↗</a>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <script>
+        // ----------------------------------------------------
+        // SPA ROUTING CONTROL
+        // ----------------------------------------------------
+        function navTo(id) {
+            // Remove active classes
+            document.querySelectorAll('section').forEach(s => {
+                s.classList.remove('active');
+                s.style.animation = 'none';
+            });
+            document.querySelectorAll('.n-lnk').forEach(l => {
+                l.classList.remove('active');
+                if (l.getAttribute('href') === `#${id}`) l.classList.add('active');
+            });
+            
+            const target = document.getElementById(id);
+            if (target) {
+                target.classList.add('active');
+                // Force reflow to re-trigger the CSS animation
+                void target.offsetHeight;
+                // Trigger entry animation
+                target.style.animation = 'slideUpFade 0.7s cubic-bezier(0.16, 1, 0.3, 1) forwards';
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+                
+                // Keep URL hash in sync without triggering hashchange loop
+                if (window.location.hash !== `#${id}`) {
+                    history.pushState(null, '', `#${id}`);
+                }
+
+                // If switching to archive, make sure active charts render
+                if (id === 'archive') {
+                    // Check currently active tab in archive
+                    const activeTabBtn = document.querySelector('.tab-btn.active');
+                    if (activeTabBtn) {
+                        const tabId = activeTabBtn.getAttribute('aria-controls');
+                        renderTabCharts(tabId);
+                    }
+                }
+            }
+        }
+
+        // Handle browser history back/forward navigation
+        window.addEventListener('hashchange', () => {
+            const hash = window.location.hash.substring(1);
+            if (['home', 'about', 'archive', 'work'].includes(hash)) {
+                navTo(hash);
+            }
+        });
+
+        // Initialize SPA location hash tracking
+        window.addEventListener('DOMContentLoaded', () => {
+            const hash = window.location.hash.substring(1);
+            if (['home', 'about', 'archive', 'work'].includes(hash)) {
+                navTo(hash);
+            } else {
+                navTo('home');
+            }
+        });
+
+        // ----------------------------------------------------
+        // ARCHIVE SUB-TAB SWITCHING & CHART TRIGGERING
+        // ----------------------------------------------------
+        function tabSw(id) {
+            // Update Tab Nav Button styles
+            document.querySelectorAll('.tab-btn').forEach(b => {
+                b.classList.remove('active');
+                b.setAttribute('aria-selected', 'false');
+            });
+            
+            // Get event trigger or corresponding btn
+            const btn = document.getElementById(`tab-btn-${id}`);
+            if (btn) {
+                btn.classList.add('active');
+                btn.setAttribute('aria-selected', 'true');
+            }
+
+            // Update Tab Content display
+            document.querySelectorAll('.tab-content').forEach(c => {
+                c.classList.remove('active');
+            });
+            
+            const targetContent = document.getElementById(id);
+            if (targetContent) {
+                targetContent.classList.add('active');
+                // Render corresponding charts with fresh animations
+                renderTabCharts(id);
+            }
+        }
+
+        // ----------------------------------------------------
+        // INTERACTIVE CURSOR & BG BLOB MOTION
+        // ----------------------------------------------------
+        const b1 = document.getElementById('b1');
+        const b2 = document.getElementById('b2');
+        const b3 = document.getElementById('b3');
+        
+        let mouseX = 0;
+        let mouseY = 0;
+        let blobX1 = 0, blobY1 = 0;
+        let blobX2 = 0, blobY2 = 0;
+        let blobX3 = 0, blobY3 = 0;
+
+        window.addEventListener('mousemove', (e) => {
+            mouseX = e.clientX;
+            mouseY = e.clientY;
+        });
+
+        function animateBlobs() {
+            if (document.getElementById('home').classList.contains('active')) {
+                // Eased follower calculations for natural motion lag
+                blobX1 += (mouseX - window.innerWidth / 2 - blobX1) * 0.04;
+                blobY1 += (mouseY - window.innerHeight / 2 - blobY1) * 0.04;
+                
+                blobX2 += (mouseX - window.innerWidth / 2 - blobX2) * 0.02;
+                blobY2 += (mouseY - window.innerHeight / 2 - blobY2) * 0.02;
+
+                blobX3 += (mouseX - window.innerWidth / 2 - blobX3) * 0.03;
+                blobY3 += (mouseY - window.innerHeight / 2 - blobY3) * 0.03;
+
+                b1.style.transform = `translate(${blobX1 * 0.1}px, ${blobY1 * 0.1}px)`;
+                b2.style.transform = `translate(${blobX2 * -0.15}px, ${blobY2 * -0.15}px)`;
+                b3.style.transform = `translate(${blobX3 * 0.08}px, ${blobY3 * -0.08}px)`;
+            }
+            requestAnimationFrame(animateBlobs);
+        }
+        animateBlobs();
+
+        // ----------------------------------------------------
+        // OBSERVATION TRACKER FILTER
+        // ----------------------------------------------------
+        function filterObs(category) {
+            // Update filter button styling
+            const buttons = document.querySelectorAll('.obs-filter-btn');
+            buttons.forEach(btn => btn.classList.remove('active'));
+            
+            // Find active trigger
+            const trigger = Array.from(buttons).find(b => b.textContent.trim() === getCategoryName(category));
+            if (trigger) trigger.classList.add('active');
+
+            // Filter items
+            const cards = document.querySelectorAll('.obs-card');
+            cards.forEach(card => {
+                if (category === 'all' || card.dataset.cat === category) {
+                    card.style.display = 'flex';
+                    card.style.animation = 'content-enter 0.4s ease forwards';
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+        }
+
+        function getCategoryName(cat) {
+            switch(cat) {
+                case 'all': return '전체';
+                case 'trash': return '쓰레기 투기';
+                case 'biz': return '폐업 상권';
+                case 'long': return '장기 방치';
+                default: return '전체';
+            }
+        }
+
+        // ----------------------------------------------------
+        // CHART.JS LIFECYCLE MANAGEMENT (DESTROY & INITIALIZE)
+        // ----------------------------------------------------
+        let activeCharts = {};
+
+        // Helper to destroy charts cleanly
+        function destroyCharts(chartIds) {
+            chartIds.forEach(id => {
+                if (activeCharts[id]) {
+                    activeCharts[id].destroy();
+                    delete activeCharts[id];
+                }
+            });
+        }
+
+        // Global Chart Defaults for Clean Minimal Design
+        Chart.defaults.font.family = "'Pretendard', var(--font-sans)";
+        Chart.defaults.color = '#6C6C68';
+        Chart.defaults.plugins.legend.labels.boxWidth = 12;
+        Chart.defaults.plugins.legend.labels.boxHeight = 12;
+        Chart.defaults.plugins.legend.labels.padding = 16;
+        Chart.defaults.plugins.legend.labels.font = { size: 11, weight: '600' };
+
+        const tooltipConfig = {
+            backgroundColor: 'rgba(20, 20, 18, 0.9)',
+            titleFont: { size: 12, weight: '700' },
+            bodyFont: { size: 12, weight: '500' },
+            padding: 12,
+            cornerRadius: 8,
+            boxWidth: 8,
+            boxHeight: 8,
+            boxPadding: 4,
+            usePointStyle: true
+        };
+
+        // Render charts depending on active sub-tab
+        function renderTabCharts(tabId) {
+            if (tabId === 'd1') {
+                // Destroy charts of other tabs
+                destroyCharts(['cBiz', 'cSch', 'cSchPie', 'cRegen', 'cRepair', 'cGdp', 'cAge']);
+                
+                // TAB 1 - Chart 1: cBin (시도별 빈집 분포)
+                if (!activeCharts['cBin']) {
+                    const ctx = document.getElementById('cBin').getContext('2d');
+                    const bD = [
+                        {r:'전남',v:20006}, {r:'전북',v:18300}, {r:'경남',v:15796}, 
+                        {r:'경북',v:15502}, {r:'부산',v:11471}, {r:'강원',v:7091}, 
+                        {r:'경기',v:6714}, {r:'서울',v:6711}, {r:'세종',v:688}
+                    ];
+
+                    const gradBlue = ctx.createLinearGradient(0, 0, 400, 0);
+                    gradBlue.addColorStop(0, '#3E8EDE');
+                    gradBlue.addColorStop(1, '#9CC9F5');
+
+                    const gradRed = ctx.createLinearGradient(0, 0, 400, 0);
+                    gradRed.addColorStop(0, '#E84A49');
+                    gradRed.addColorStop(1, '#FFA5A4');
+
+                    activeCharts['cBin'] = new Chart(ctx, {
+                        type: 'bar',
+                        data: {
+                            labels: bD.map(d => d.r),
+                            datasets: [{
+                                data: bD.map(d => d.v),
+                                backgroundColor: bD.map(d => d.v >= 15000 ? gradRed : gradBlue),
+                                borderRadius: 4,
+                                borderSkipped: false,
+                                barPercentage: 0.7
+                            }]
+                        },
+                        options: {
+                            indexAxis: 'y',
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            plugins: {
+                                legend: { display: false },
+                                tooltip: tooltipConfig
+                            },
+                            scales: {
+                                x: {
+                                    grid: { color: 'rgba(0, 0, 0, 0.03)' },
+                                    ticks: { font: { family: 'DM Mono', size: 10 } }
+                                },
+                                y: {
+                                    grid: { display: false },
+                                    ticks: { font: { weight: '600', size: 12 } }
+                                }
+                            }
+                        }
+                    });
+                }
+
+                // TAB 1 - Chart 2: cDonut (수도권 vs 비수도권)
+                if (!activeCharts['cDonut']) {
+                    const ctx = document.getElementById('cDonut').getContext('2d');
+                    activeCharts['cDonut'] = new Chart(ctx, {
+                        type: 'doughnut',
+                        data: {
+                            labels: ['수도권', '비수도권'],
+                            datasets: [{
+                                data: [14.9, 85.1],
+                                backgroundColor: ['#3E8EDE', '#E84A49'],
+                                borderWidth: 0,
+                                hoverOffset: 4
+                            }]
+                        },
+                        options: {
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            cutout: '70%',
+                            plugins: {
+                                legend: { position: 'right' },
+                                tooltip: tooltipConfig
+                            }
+                        }
+                    });
+                }
+
+                // TAB 1 - Chart 3: cReg (대권역별 스케일)
+                if (!activeCharts['cReg']) {
+                    const ctx = document.getElementById('cReg').getContext('2d');
+                    const gradPurp = ctx.createLinearGradient(0, 0, 0, 200);
+                    gradPurp.addColorStop(0, '#4D45E8');
+                    gradPurp.addColorStop(1, '#8C85FF');
+
+                    activeCharts['cReg'] = new Chart(ctx, {
+                        type: 'bar',
+                        data: {
+                            labels: ['수도권', '영남권', '호남권', '충청권', '기타'],
+                            datasets: [{
+                                data: [17603, 43569, 38306, 12254, 8937],
+                                backgroundColor: gradPurp,
+                                borderRadius: 5,
+                                barPercentage: 0.5
+                            }]
+                        },
+                        options: {
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            plugins: {
+                                legend: { display: false },
+                                tooltip: tooltipConfig
+                            },
+                            scales: {
+                                x: { grid: { display: false } },
+                                y: {
+                                    grid: { color: 'rgba(0, 0, 0, 0.03)' },
+                                    ticks: { font: { family: 'DM Mono', size: 10 } }
+                                }
+                            }
+                        }
+                    });
+                }
+            }
+            
+            else if (tabId === 'd2') {
+                // Destroy charts of other tabs
+                destroyCharts(['cBin', 'cDonut', 'cReg', 'cSchPie', 'cRegen', 'cRepair', 'cGdp', 'cAge']);
+
+                // TAB 2 - Chart 1: cBiz (서울 상권 개업 vs 폐업)
+                if (!activeCharts['cBiz']) {
+                    const ctx = document.getElementById('cBiz').getContext('2d');
+                    activeCharts['cBiz'] = new Chart(ctx, {
+                        type: 'bar',
+                        data: {
+                            labels: ['2023 1Q', '2024 1Q', '2025 1Q'],
+                            datasets: [
+                                { label: '개업 점포 수', data: [21766, 17931, 11494], backgroundColor: '#3E8EDE', borderRadius: 4, barPercentage: 0.6, categoryPercentage: 0.7 },
+                                { label: '폐업 점포 수', data: [19643, 21735, 19361], backgroundColor: '#E84A49', borderRadius: 4, barPercentage: 0.6, categoryPercentage: 0.7 }
+                            ]
+                        },
+                        options: {
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            plugins: {
+                                legend: { position: 'top' },
+                                tooltip: tooltipConfig
+                            },
+                            scales: {
+                                x: { grid: { display: false } },
+                                y: {
+                                    grid: { color: 'rgba(0, 0, 0, 0.03)' },
+                                    ticks: { font: { family: 'DM Mono', size: 10 } }
+                                }
+                            }
+                        }
+                    });
+                }
+
+                // TAB 2 - Chart 2: cSch (누적 폐교 활용현황)
+                if (!activeCharts['cSch']) {
+                    const ctx = document.getElementById('cSch').getContext('2d');
+                    activeCharts['cSch'] = new Chart(ctx, {
+                        type: 'bar',
+                        data: {
+                            labels: ['2020', '2021', '2022', '2023', '2024'],
+                            datasets: [
+                                { label: '활용', data: [22, 23, 24, 24, 25], backgroundColor: '#209F76', stack: 'a', barPercentage: 0.4 },
+                                { label: '처분', data: [68, 67, 66, 66, 66], backgroundColor: '#B8B8B5', stack: 'a', barPercentage: 0.4 },
+                                { label: '방치', data: [10, 10, 10, 10, 9], backgroundColor: '#E84A49', stack: 'a', barPercentage: 0.4 }
+                            ]
+                        },
+                        options: {
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            plugins: {
+                                legend: { position: 'top' },
+                                tooltip: tooltipConfig
+                            },
+                            scales: {
+                                x: { stacked: true, grid: { display: false } },
+                                y: { stacked: true, grid: { color: 'rgba(0, 0, 0, 0.03)' } }
+                            }
+                        }
+                    });
+                }
+            }
+            
+            else if (tabId === 'd3') {
+                // Destroy charts of other tabs
+                destroyCharts(['cBin', 'cDonut', 'cReg', 'cBiz', 'cSch', 'cRegen', 'cRepair', 'cGdp', 'cAge']);
+
+                // Start progress bar animations inside Tab 3
+                setTimeout(() => {
+                    const bars = document.querySelectorAll('.r-bar');
+                    bars.forEach(bar => {
+                        const targetVal = bar.getAttribute('data-val');
+                        bar.style.width = targetVal + '%';
+                    });
+                }, 100);
+
+                // TAB 3 - Chart 1: cSchPie (교육 인프라 붕괴)
+                if (!activeCharts['cSchPie']) {
+                    const ctx = document.getElementById('cSchPie').getContext('2d');
+                    activeCharts['cSchPie'] = new Chart(ctx, {
+                        type: 'pie',
+                        data: {
+                            labels: ['도지역 폐교', '시지역 폐교'],
+                            datasets: [{
+                                data: [3749, 231],
+                                backgroundColor: ['#F09E2B', '#E5E5E2'],
+                                borderWidth: 1,
+                                borderColor: '#ffffff'
+                            }]
+                        },
+                        options: {
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            plugins: {
+                                legend: { position: 'right' },
+                                tooltip: tooltipConfig
+                            }
+                        }
+                    });
+                }
+            }
+            
+            else if (tabId === 'd4') {
+                // Destroy charts of other tabs
+                destroyCharts(['cBin', 'cDonut', 'cReg', 'cBiz', 'cSch', 'cSchPie', 'cGdp', 'cAge']);
+
+                // TAB 4 - Chart 1: cRegen (도시재생 뉴딜)
+                if (!activeCharts['cRegen']) {
+                    const ctx = document.getElementById('cRegen').getContext('2d');
+                    activeCharts['cRegen'] = new Chart(ctx, {
+                        type: 'doughnut',
+                        data: {
+                            labels: ['대도시', '중소도시', '소도시'],
+                            datasets: [{
+                                data: [162, 122, 27],
+                                backgroundColor: ['#4D45E8', '#F09E2B', '#C4C2BB'],
+                                borderWidth: 0
+                            }]
+                        },
+                        options: {
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            cutout: '60%',
+                            plugins: {
+                                legend: { position: 'right' },
+                                tooltip: tooltipConfig
+                            }
+                        }
+                    });
+                }
+
+                // TAB 4 - Chart 2: cRepair (정비 실적 유형)
+                if (!activeCharts['cRepair']) {
+                    const ctx = document.getElementById('cRepair').getContext('2d');
+                    activeCharts['cRepair'] = new Chart(ctx, {
+                        type: 'bar',
+                        data: {
+                            labels: ['2022', '2023', '2024'],
+                            datasets: [
+                                { label: '단순철거', data: [6832, 6612, 5940], backgroundColor: '#E84A49', borderRadius: 4, barPercentage: 0.5 },
+                                { label: '공공활용', data: [232, 344, 362], backgroundColor: '#209F76', borderRadius: 4, barPercentage: 0.5 }
+                            ]
+                        },
+                        options: {
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            plugins: {
+                                legend: { position: 'top' },
+                                tooltip: tooltipConfig
+                            },
+                            scales: {
+                                x: { grid: { display: false } },
+                                y: {
+                                    grid: { color: 'rgba(0, 0, 0, 0.03)' },
+                                    ticks: { font: { family: 'DM Mono', size: 10 } }
+                                }
+                            }
+                        }
+                    });
+                }
+            }
+            
+            else if (tabId === 'd5') {
+                // Destroy charts of other tabs
+                destroyCharts(['cBin', 'cDonut', 'cReg', 'cBiz', 'cSch', 'cSchPie', 'cRegen', 'cRepair']);
+
+                // TAB 5 - Chart 1: cGdp (수도권 vs 비수도권 GDP 추이)
+                if (!activeCharts['cGdp']) {
+                    const ctx = document.getElementById('cGdp').getContext('2d');
+                    activeCharts['cGdp'] = new Chart(ctx, {
+                        type: 'line',
+                        data: {
+                            labels: ['2000', '2004', '2008', '2012', '2016', '2020'],
+                            datasets: [
+                                {
+                                    label: '수도권 (%)',
+                                    data: [48.41, 48.58, 48.84, 49.39, 50.11, 52.53],
+                                    borderColor: '#4D45E8',
+                                    backgroundColor: 'transparent',
+                                    borderWidth: 3,
+                                    tension: 0.3,
+                                    pointBackgroundColor: '#4D45E8',
+                                    pointHoverRadius: 6
+                                },
+                                {
+                                    label: '비수도권 (%)',
+                                    data: [51.59, 51.42, 51.16, 50.61, 49.89, 47.47],
+                                    borderColor: '#C4C2BB',
+                                    borderDash: [5, 5],
+                                    backgroundColor: 'transparent',
+                                    borderWidth: 2,
+                                    tension: 0.3,
+                                    pointBackgroundColor: '#C4C2BB',
+                                    pointHoverRadius: 6
+                                }
+                            ]
+                        },
+                        options: {
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            plugins: {
+                                legend: { position: 'top' },
+                                tooltip: tooltipConfig
+                            },
+                            scales: {
+                                x: { grid: { display: false } },
+                                y: {
+                                    grid: { color: 'rgba(0, 0, 0, 0.03)' },
+                                    ticks: { font: { family: 'DM Mono', size: 10 } }
+                                }
+                            }
+                        }
+                    });
+                }
+
+                // TAB 5 - Chart 2: cAge (거점도시별 노령화지수)
+                if (!activeCharts['cAge']) {
+                    const ctx = document.getElementById('cAge').getContext('2d');
+                    const bD = [
+                        {city: '부산', val: 244.0, col: '#E84A49'},
+                        {city: '서울', val: 219.5, col: '#4D45E8'},
+                        {city: '대구', val: 192.6, col: '#F09E2B'},
+                        {city: '대전', val: 162.6, col: '#F09E2B'},
+                        {city: '인천', val: 161.4, col: '#F09E2B'},
+                        {city: '광주', val: 146.3, col: '#3E8EDE'},
+                        {city: '울산', val: 138.2, col: '#209F76'},
+                        {city: '세종', val: 60.6, col: '#209F76'}
+                    ];
+
+                    activeCharts['cAge'] = new Chart(ctx, {
+                        type: 'bar',
+                        data: {
+                            labels: bD.map(item => item.city),
+                            datasets: [{
+                                data: bD.map(item => item.val),
+                                backgroundColor: bD.map(item => item.col),
+                                borderRadius: 4,
+                                borderSkipped: false,
+                                barPercentage: 0.65
+                            }]
+                        },
+                        options: {
+                            indexAxis: 'y',
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            plugins: {
+                                legend: { display: false },
+                                tooltip: tooltipConfig
+                            },
+                            scales: {
+                                x: {
+                                    grid: { color: 'rgba(0, 0, 0, 0.03)' },
+                                    ticks: { font: { family: 'DM Mono', size: 10 } }
+                                },
+                                y: {
+                                    grid: { display: false },
+                                    ticks: { font: { weight: '600', size: 12 } }
+                                }
+                            }
+                        }
+                    });
+                }
+            }
+        }
+    </script>
+</body>
+</html>
