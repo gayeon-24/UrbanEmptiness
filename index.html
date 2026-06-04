@@ -117,11 +117,17 @@
             top: 0;
             left: 0;
             width: 100%;
-            padding: 24px 50px;
+            height: 74px;
+            padding: 0 50px;
             display: flex;
             justify-content: space-between;
             align-items: center;
             z-index: 1000;
+            background: rgba(248, 248, 245, 0.85);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border-bottom: 1px solid var(--border);
+            box-sizing: border-box;
         }
 
         .logo {
@@ -208,7 +214,7 @@
         }
 
         section {
-            position: absolute;
+            position: fixed;
             top: 0;
             left: 0;
             width: 100%;
@@ -229,6 +235,24 @@
             transform: translateY(0);
             position: relative;
             z-index: 10;
+        }
+
+        #archive {
+            padding-top: 90px !important;
+            padding-bottom: 30px !important;
+            padding-left: 10% !important;
+            padding-right: 10% !important;
+            min-height: unset !important;
+            transform: none !important;
+            transition: opacity 0.6s cubic-bezier(0.16, 1, 0.3, 1) !important;
+        }
+
+        @media (max-width: 900px) {
+            #archive {
+                padding-top: 70px !important;
+                padding-left: 24px !important;
+                padding-right: 24px !important;
+            }
         }
 
         .sec-head {
@@ -266,17 +290,29 @@
            HOME PAGE
            ---------------------------------------------------- */
         #home {
-            justify-content: center;
+            justify-content: flex-start;
             align-items: flex-start;
             padding-left: 10%;
-            height: 100vh;
-            position: relative;
-            overflow: hidden;
+            padding-right: 10%;
+            padding-bottom: 150px !important;
+            min-height: 100vh;
+        }
+
+        @media (max-width: 900px) {
+            #home {
+                padding-left: 24px !important;
+                padding-right: 24px !important;
+                padding-bottom: 100px !important;
+            }
         }
 
         .home-content-wrap {
             max-width: 700px;
             z-index: 2;
+            min-height: calc(100vh - 220px);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
         }
 
         .home-tag {
@@ -294,6 +330,7 @@
             gap: 8px;
             box-shadow: var(--shadow-sm);
             transition: var(--transition-smooth);
+            align-self: flex-start;
         }
 
         .home-tag::before {
@@ -342,7 +379,7 @@
         .blob-container {
             position: absolute;
             right: 8%;
-            top: 20%;
+            top: 15vh;
             width: 480px;
             height: 480px;
             z-index: -1;
@@ -464,11 +501,28 @@
         .tab-wrap {
             display: flex;
             gap: 8px;
-            margin-bottom: 35px;
+            margin-bottom: 32px;
             border-bottom: 1px solid var(--border);
-            padding-bottom: 12px;
+            padding-bottom: 16px;
             max-width: 1200px;
             flex-wrap: wrap;
+            position: sticky;
+            top: 74px;
+            background: rgba(248, 248, 245, 0.85);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            z-index: 100;
+            padding-top: 16px;
+            transition: top 0.3s ease;
+        }
+
+        @media (max-width: 900px) {
+            .tab-wrap {
+                top: 56px;
+                padding-top: 12px;
+                padding-bottom: 12px;
+                margin-bottom: 24px;
+            }
         }
 
         .tab-btn {
@@ -496,13 +550,47 @@
         }
 
         .tab-content {
-            display: none;
+            display: block !important;
             max-width: 1200px;
+            margin-bottom: 80px;
+            scroll-margin-top: 150px;
             animation: content-enter 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
         }
 
-        .tab-content.active {
-            display: block;
+        .tab-content:last-of-type {
+            margin-bottom: 0;
+        }
+
+        @media (max-width: 900px) {
+            .tab-content {
+                scroll-margin-top: 125px;
+                margin-bottom: 60px;
+            }
+            .tab-content:last-of-type {
+                margin-bottom: 0;
+            }
+        }
+
+        .tab-sec-title {
+            font-family: var(--font-display);
+            font-size: 1.6rem;
+            font-weight: 700;
+            letter-spacing: -0.02em;
+            color: var(--text);
+            margin-top: 20px;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .tab-sec-title::before {
+            content: '';
+            display: inline-block;
+            width: 6px;
+            height: 1.1em;
+            background: var(--text);
+            border-radius: 3px;
         }
 
         @keyframes content-enter {
@@ -516,7 +604,7 @@
             border-left: 4px solid var(--text);
             border-radius: 4px;
             padding: 16px 24px;
-            margin-bottom: 30px;
+            margin-bottom: 20px;
             font-size: 0.95rem;
             font-weight: 500;
             line-height: 1.6;
@@ -533,7 +621,7 @@
             display: grid;
             grid-template-columns: repeat(4, 1fr);
             gap: 16px;
-            margin-bottom: 30px;
+            margin-bottom: 20px;
         }
 
         .m-card {
@@ -1068,7 +1156,8 @@
 
         @media (max-width: 900px) {
             header {
-                padding: 16px 24px;
+                padding: 0 24px;
+                height: 56px;
             }
             
             section {
@@ -1144,9 +1233,7 @@
         <div class="logo" id="main-logo" onclick="navTo('home')" aria-label="도시의 빈칸 메인페이지로 이동">도시의 빈칸</div>
         <nav>
             <ul>
-                <li><a href="#about" class="n-lnk" onclick="navTo('about')" id="nav-about">About</a></li>
-                <li><a href="#archive" class="n-lnk" onclick="navTo('archive')" id="nav-archive">Archive</a></li>
-                <li><a href="#work" class="n-lnk" onclick="navTo('work')" id="nav-work">Work</a></li>
+                <li><a href="#archive" class="n-lnk" onclick="event.preventDefault(); navTo('archive')" id="nav-archive">Archive</a></li>
             </ul>
         </nav>
     </header>
@@ -1165,48 +1252,105 @@
                 <h1 class="home-title">Next Generation.<br><span>Urban Emptiness</span></h1>
                 <p class="home-desc">도시 구석구석에 방치된 무형·유형의 과부하 상태를 '쓰레기'로 규정하고 데이터 시각화와 정보 디자인을 통해 정돈의 가치를 탐구합니다.</p>
             </div>
+
+            <!-- 01 / TEAM MEMBERS SECTION (WORK) -->
+            <div id="home-work" style="width: 100%; margin-top: 100px; max-width: 1200px;">
+                <div class="sec-head">
+                    <div class="sec-tag">01 / TEAM MEMBERS</div>
+                    <h2 class="sec-title">개별 결과물 아카이브</h2>
+                </div>
+                
+                <div class="work-grid">
+                    <div class="work-card">
+                        <div class="work-meta">
+                            <p class="sec-tag">MEMBER 01</p>
+                            <h3 class="work-name">박소율</h3>
+                            <p class="work-role">청파·당산의 상권 이탈 기반 인터랙티브 맵</p>
+                        </div>
+                        <a href="https://qsyqsy1231-del.github.io/-I/" class="work-link" target="_blank" rel="noopener noreferrer" aria-label="박소율 결과물 바로가기">↗</a>
+                    </div>
+                    
+                    <div class="work-card">
+                        <div class="work-meta">
+                            <p class="sec-tag">MEMBER 02</p>
+                            <h3 class="work-name">류다경</h3>
+                            <p class="work-role">폐관 극장 현황 기반 관람 문화 변화 시각화</p>
+                        </div>
+                        <a href="#member-02" class="work-link" aria-label="류다경 결과물 바로가기">↗</a>
+                    </div>
+                    
+                    <div class="work-card">
+                        <div class="work-meta">
+                            <p class="sec-tag">MEMBER 03</p>
+                            <h3 class="work-name">김서원</h3>
+                            <p class="work-role">전라남도 빈집 현황 기반 공간 소멸 시각화</p>
+                        </div>
+                        <a href="https://www.figma.com/proto/p1n9JrhfQrpN4EnbG8MKY1/%EB%8D%B0%EC%9D%B4%ED%84%B0%EC%8B%9C%EA%B0%81%ED%99%94%EC%99%80%EC%A0%95%EB%B3%B4%EB%94%94%EC%9E%90%EC%9D%B8_%EA%B9%80%EC%84%9C%EC%9B%90?node-id=0-1&amp;t=FMWZAqqqTKAbuQHS-1" class="work-link" target="_blank" rel="noopener noreferrer" aria-label="김서원 결과물 바로가기">↗</a>
+                    </div>
+                    
+                    <div class="work-card">
+                        <div class="work-meta">
+                            <p class="sec-tag">MEMBER 04</p>
+                            <h3 class="work-name">이하윤</h3>
+                            <p class="work-role">아이들이 사라진 자리에 남겨진, 전국 미활용 폐교 리서치</p>
+                        </div>
+                        <a href="https://ontheedgeofextinction.lovable.app" class="work-link" target="_blank" rel="noopener noreferrer" aria-label="이하윤 결과물 바로가기">↗</a>
+                    </div>
+                    
+                    <div class="work-card">
+                        <div class="work-meta">
+                            <p class="sec-tag">MEMBER 05</p>
+                            <h3 class="work-name">이가연</h3>
+                            <p class="work-role">빈집 서울<br>서울시 빈집 아카이브</p>
+                        </div>
+                        <a href="https://www.figma.com/proto/bTmI2T108PSvDQhsUdYElR/%EB%8D%B0%EC%8B%9C%EC%A0%95_%EA%B0%9C%EC%9D%B8?node-id=76-251&amp;t=PfaPr3nw8cV0BMo6-1" class="work-link" target="_blank" rel="noopener noreferrer" aria-label="이가연 결과물 바로가기">↗</a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 02 / OVERVIEW SECTION (ABOUT) -->
+            <div id="home-about" style="width: 100%; margin-top: 100px; max-width: 1200px; margin-bottom: 0;">
+                <div class="sec-head">
+                    <div class="sec-tag">02 / OVERVIEW</div>
+                    <h2 class="sec-title">프로젝트 소개</h2>
+                </div>
+                
+                <div class="about-grid">
+                    <div class="about-hero-text">
+                        "도시의 빈칸"은 비어 있는 공간이 단순한 공백이 아니라 <mark>사회적 격차와 구조적 소멸</mark>이 남긴 흔적임을 추적하는 디지털 아카이브 공간입니다.
+                    </div>
+                    <div class="about-sub-text">
+                        <p>기본 거시 데이터부터 수집된 시간적 흐름, 환경적 변수, 마이크로 지역 매트릭스, 그리고 세밀한 현장 관찰을 기반으로 한 사회/심리적 요인까지 다각도의 디자인 실험을 거쳐 정돈된 레이아웃으로 복합 시각화 대시보드를 선사합니다.</p>
+                        <p>우리는 방치되고 버려진 빈 공간의 이면을 조명하여, 현대 도시가 해결해야 할 공공자산의 기능 소멸 및 인구 붕괴 문제를 새로운 아카이빙 시각에서 재정의합니다.</p>
+                    </div>
+                </div>
+
+                <div class="about-stat-row">
+                    <div class="about-stat-card">
+                        <div class="about-stat-num" style="color: var(--c-purple);">118k</div>
+                        <div class="about-stat-lbl">전국 총 빈집 수 (가구)</div>
+                    </div>
+                    <div class="about-stat-card">
+                        <div class="about-stat-num" style="color: var(--c-red);">3,980</div>
+                        <div class="about-stat-lbl">전국 누적 폐교 자산 수</div>
+                    </div>
+                    <div class="about-stat-card">
+                        <div class="about-stat-num" style="color: var(--c-green);">50%</div>
+                        <div class="about-stat-lbl">서울 소상공인 5년 생존율</div>
+                    </div>
+                </div>
+            </div>
         </section>
 
-        <!-- 01 / ABOUT SECTION -->
-        <section id="about">
-            <div class="sec-head">
-                <div class="sec-tag">01 / OVERVIEW</div>
-                <h2 class="sec-title">프로젝트 소개</h2>
-            </div>
-            
-            <div class="about-grid">
-                <div class="about-hero-text">
-                    "도시의 빈칸"은 비어 있는 공간이 단순한 공백이 아니라 <mark>사회적 격차와 구조적 소멸</mark>이 남긴 흔적임을 추적하는 디지털 아카이브 공간입니다.
-                </div>
-                <div class="about-sub-text">
-                    <p>기본 거시 데이터부터 수집된 시간적 흐름, 환경적 변수, 마이크로 지역 매트릭스, 그리고 세밀한 현장 관찰을 기반으로 한 사회/심리적 요인까지 다각도의 디자인 실험을 거쳐 정돈된 레이아웃으로 복합 시각화 대시보드를 선사합니다.</p>
-                    <p>우리는 방치되고 버려진 빈 공간의 이면을 조명하여, 현대 도시가 해결해야 할 공공자산의 기능 소멸 및 인구 붕괴 문제를 새로운 아카이빙 시각에서 재정의합니다.</p>
-                </div>
-            </div>
 
-            <div class="about-stat-row">
-                <div class="about-stat-card">
-                    <div class="about-stat-num" style="color: var(--c-purple);">118k</div>
-                    <div class="about-stat-lbl">전국 총 빈집 수 (가구)</div>
-                </div>
-                <div class="about-stat-card">
-                    <div class="about-stat-num" style="color: var(--c-red);">3,980</div>
-                    <div class="about-stat-lbl">전국 누적 폐교 자산 수</div>
-                </div>
-                <div class="about-stat-card">
-                    <div class="about-stat-num" style="color: var(--c-green);">50%</div>
-                    <div class="about-stat-lbl">서울 소상공인 5년 생존율</div>
-                </div>
-            </div>
-        </section>
 
-        <!-- 02 / ARCHIVE SECTION (DASHBOARD) -->
+        <!-- 01 / ARCHIVE SECTION (DASHBOARD) -->
         <section id="archive">
             <div class="sec-head">
-                <div class="sec-tag">02 / DATA DASHBOARD</div>
+                <div class="sec-tag">01 / DATA DASHBOARD</div>
                 <h2 class="sec-title">공간 쓰레기 아카이브</h2>
             </div>
-            
+
             <!-- Dashboard Tab Nav -->
             <div class="tab-wrap" role="tablist">
                 <button class="tab-btn active" id="tab-btn-d1" onclick="tabSw('d1')" role="tab" aria-selected="true" aria-controls="d1">기본 통계</button>
@@ -1218,6 +1362,7 @@
 
             <!-- TAB 1: 기본 통계 -->
             <div id="d1" class="tab-content active" role="tabpanel" aria-labelledby="tab-btn-d1">
+                <h3 class="tab-sec-title">기본 통계</h3>
                 <div class="insight">구조적 불균형이 만들어낸 소멸의 신호 — 전국 시도의 빈집 데이터를 기반으로 거시 현황을 추적합니다.</div>
                 
                 <div class="metrics">
@@ -1273,6 +1418,7 @@
 
             <!-- TAB 2: 시간적 변화 -->
             <div id="d2" class="tab-content" role="tabpanel" aria-labelledby="tab-btn-d2">
+                <h3 class="tab-sec-title">시간적 변화</h3>
                 <div class="insight">상권의 생성과 소멸 속도 추적 — 개/폐업 변동률과 미활용 폐교 자산의 소멸 타임라인입니다.</div>
                 
                 <div class="metrics">
@@ -1397,6 +1543,7 @@
 
             <!-- TAB 3: 공간/환경 요인 -->
             <div id="d3" class="tab-content" role="tabpanel" aria-labelledby="tab-btn-d3">
+                <h3 class="tab-sec-title">공간/환경 요인</h3>
                 <div class="insight">인구 구조의 변동이 미치는 환경 파급력 — 고령인구 집중도와 폐교 공간의 불균형 분포 상태입니다.</div>
                 
                 <div class="metrics">
@@ -1479,6 +1626,7 @@
 
             <!-- TAB 4: 지역별 현황 -->
             <div id="d4" class="tab-content" role="tabpanel" aria-labelledby="tab-btn-d4">
+                <h3 class="tab-sec-title">지역별 현황</h3>
                 <div class="insight">도시 스케일에 따른 미시적 공실 원인 격차 — 서울 내부 핫스팟 비교군 및 공간 정비 알고리즘입니다.</div>
                 
                 <div class="panel">
@@ -1537,6 +1685,7 @@
 
             <!-- TAB 5: 사회/심리 요인 -->
             <div id="d5" class="tab-content" role="tabpanel" aria-labelledby="tab-btn-d5">
+                <h3 class="tab-sec-title">사회/심리 요인</h3>
                 <div class="insight">단순한 공백을 넘어선 사회적 단절의 단면 — 생산성 역전 현상과 생생한 필드 트래킹 기록입니다.</div>
                 
                 <div class="metrics">
@@ -1623,67 +1772,29 @@
             </div>
         </section>
 
-        <!-- 03 / TEAM MEMBERS SECTION (WORK) -->
-        <section id="work">
-            <div class="sec-head">
-                <div class="sec-tag">03 / TEAM MEMBERS</div>
-                <h2 class="sec-title">개별 결과물 아카이브</h2>
-            </div>
-            
-            <div class="work-grid">
-                <div class="work-card">
-                    <div class="work-meta">
-                        <p class="sec-tag">MEMBER 01</p>
-                        <h3 class="work-name">박소율</h3>
-                        <p class="work-role">청파·당산의 상권 이탈 기반 인터랙티브 맵</p>
-                    </div>
-                    <a href="https://qsyqsy1231-del.github.io/-I/" class="work-link" target="_blank" rel="noopener noreferrer" aria-label="박소율 결과물 바로가기">↗</a>
-                </div>
-                
-                <div class="work-card">
-                    <div class="work-meta">
-                        <p class="sec-tag">MEMBER 02</p>
-                        <h3 class="work-name">류다경</h3>
-                        <p class="work-role">폐관 극장 현황 기반 관람 문화 변화 시각화</p>
-                    </div>
-                    <a href="#member-02" class="work-link" aria-label="류다경 결과물 바로가기">↗</a>
-                </div>
-                
-                <div class="work-card">
-                    <div class="work-meta">
-                        <p class="sec-tag">MEMBER 03</p>
-                        <h3 class="work-name">김서원</h3>
-                        <p class="work-role">전라남도 빈집 현황 기반 공간 소멸 시각화</p>
-                    </div>
-                    <a href="https://www.figma.com/proto/p1n9JrhfQrpN4EnbG8MKY1/%EB%8D%B0%EC%9D%B4%ED%84%B0%EC%8B%9C%EA%B0%81%ED%99%94%EC%99%80%EC%A0%95%EB%B3%B4%EB%94%94%EC%9E%90%EC%9D%B8_%EA%B9%80%EC%84%9C%EC%9B%90?node-id=0-1&amp;t=FMWZAqqqTKAbuQHS-1" class="work-link" target="_blank" rel="noopener noreferrer" aria-label="김서원 결과물 바로가기">↗</a>
-                </div>
-                
-                <div class="work-card">
-                    <div class="work-meta">
-                        <p class="sec-tag">MEMBER 04</p>
-                        <h3 class="work-name">이하윤</h3>
-                        <p class="work-role">아이들이 사라진 자리에 남겨진, 전국 미활용 폐교 리서치</p>
-                    </div>
-                    <a href="https://ontheedgeofextinction.lovable.app" class="work-link" target="_blank" rel="noopener noreferrer" aria-label="이하윤 결과물 바로가기">↗</a>
-                </div>
-                
-                <div class="work-card">
-                    <div class="work-meta">
-                        <p class="sec-tag">MEMBER 05</p>
-                        <h3 class="work-name">이가연</h3>
-                        <p class="work-role">빈집 서울<br>서울시 빈집 아카이브</p>
-                    </div>
-                    <a href="https://www.figma.com/proto/bTmI2T108PSvDQhsUdYElR/%EB%8D%B0%EC%8B%9C%EC%A0%95_%EA%B0%9C%EC%9D%B8?node-id=76-251&amp;t=PfaPr3nw8cV0BMo6-1" class="work-link" target="_blank" rel="noopener noreferrer" aria-label="이가연 결과물 바로가기">↗</a>
-                </div>
-            </div>
-        </section>
+
     </main>
 
     <script>
         // ----------------------------------------------------
         // SPA ROUTING CONTROL
         // ----------------------------------------------------
+        if ('scrollRestoration' in history) {
+            history.scrollRestoration = 'manual';
+        }
+
         function navTo(id) {
+            let actualSectionId = id;
+            let scrollToElementId = null;
+
+            if (id === 'work') {
+                actualSectionId = 'home';
+                scrollToElementId = 'home-work';
+            } else if (id === 'about') {
+                actualSectionId = 'home';
+                scrollToElementId = 'home-about';
+            }
+
             // Remove active classes
             document.querySelectorAll('section').forEach(s => {
                 s.classList.remove('active');
@@ -1694,14 +1805,26 @@
                 if (l.getAttribute('href') === `#${id}`) l.classList.add('active');
             });
             
-            const target = document.getElementById(id);
+            const target = document.getElementById(actualSectionId);
             if (target) {
                 target.classList.add('active');
                 // Force reflow to re-trigger the CSS animation
                 void target.offsetHeight;
                 // Trigger entry animation
                 target.style.animation = 'slideUpFade 0.7s cubic-bezier(0.16, 1, 0.3, 1) forwards';
-                window.scrollTo({ top: 0, behavior: 'smooth' });
+                
+                if (scrollToElementId) {
+                    const scrollTarget = document.getElementById(scrollToElementId);
+                    if (scrollTarget) {
+                        setTimeout(() => {
+                            scrollTarget.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                        }, 100);
+                    }
+                } else {
+                    window.scrollTo(0, 0);
+                    setTimeout(() => window.scrollTo(0, 0), 0);
+                    setTimeout(() => window.scrollTo(0, 0), 100);
+                }
                 
                 // Keep URL hash in sync without triggering hashchange loop
                 if (window.location.hash !== `#${id}`) {
@@ -1709,13 +1832,8 @@
                 }
 
                 // If switching to archive, make sure active charts render
-                if (id === 'archive') {
-                    // Check currently active tab in archive
-                    const activeTabBtn = document.querySelector('.tab-btn.active');
-                    if (activeTabBtn) {
-                        const tabId = activeTabBtn.getAttribute('aria-controls');
-                        renderTabCharts(tabId);
-                    }
+                if (actualSectionId === 'archive') {
+                    renderTabCharts('d1');
                 }
             }
         }
@@ -1754,15 +1872,10 @@
                 btn.classList.add('active');
                 btn.setAttribute('aria-selected', 'true');
             }
-
-            // Update Tab Content display
-            document.querySelectorAll('.tab-content').forEach(c => {
-                c.classList.remove('active');
-            });
             
             const targetContent = document.getElementById(id);
             if (targetContent) {
-                targetContent.classList.add('active');
+                targetContent.scrollIntoView({ behavior: 'smooth', block: 'start' });
                 // Render corresponding charts with fresh animations
                 renderTabCharts(id);
             }
@@ -1878,8 +1991,6 @@
         // Render charts depending on active sub-tab
         function renderTabCharts(tabId) {
             if (tabId === 'd1') {
-                // Destroy charts of other tabs
-                destroyCharts(['cBiz', 'cSch', 'cSchPie', 'cRegen', 'cRepair', 'cGdp', 'cAge']);
                 
                 // TAB 1 - Chart 1: cBin (시도별 빈집 분포)
                 if (!activeCharts['cBin']) {
@@ -1996,8 +2107,6 @@
             }
             
             else if (tabId === 'd2') {
-                // Destroy charts of other tabs
-                destroyCharts(['cBin', 'cDonut', 'cReg', 'cSchPie', 'cRegen', 'cRepair', 'cGdp', 'cAge']);
 
                 // TAB 2 - Chart 1: cBiz (서울 상권 개업 vs 폐업)
                 if (!activeCharts['cBiz']) {
@@ -2059,8 +2168,6 @@
             }
             
             else if (tabId === 'd3') {
-                // Destroy charts of other tabs
-                destroyCharts(['cBin', 'cDonut', 'cReg', 'cBiz', 'cSch', 'cRegen', 'cRepair', 'cGdp', 'cAge']);
 
                 // Start progress bar animations inside Tab 3
                 setTimeout(() => {
@@ -2098,8 +2205,6 @@
             }
             
             else if (tabId === 'd4') {
-                // Destroy charts of other tabs
-                destroyCharts(['cBin', 'cDonut', 'cReg', 'cBiz', 'cSch', 'cSchPie', 'cGdp', 'cAge']);
 
                 // TAB 4 - Chart 1: cRegen (도시재생 뉴딜)
                 if (!activeCharts['cRegen']) {
@@ -2158,8 +2263,6 @@
             }
             
             else if (tabId === 'd5') {
-                // Destroy charts of other tabs
-                destroyCharts(['cBin', 'cDonut', 'cReg', 'cBiz', 'cSch', 'cSchPie', 'cRegen', 'cRepair']);
 
                 // TAB 5 - Chart 1: cGdp (수도권 vs 비수도권 GDP 추이)
                 if (!activeCharts['cGdp']) {
@@ -2259,6 +2362,55 @@
                 }
             }
         }
+
+        // ----------------------------------------------------
+        // SCROLLSPY & LAZY CHART RENDERING FOR ARCHIVE
+        // ----------------------------------------------------
+        window.addEventListener('scroll', () => {
+            if (!document.getElementById('archive').classList.contains('active')) return;
+
+            const tabs = ['d1', 'd2', 'd3', 'd4', 'd5'];
+            const scrollPos = window.scrollY || document.documentElement.scrollTop;
+            const viewportHeight = window.innerHeight;
+
+            // 1. ScrollSpy (Active sub-tab highlight)
+            let activeId = 'd1';
+            for (let i = 0; i < tabs.length; i++) {
+                const el = document.getElementById(tabs[i]);
+                if (el) {
+                    const rect = el.getBoundingClientRect();
+                    const topPos = rect.top + window.scrollY;
+                    const threshold = window.innerWidth > 900 ? 160 : 130;
+                    if (scrollPos >= topPos - threshold) {
+                        activeId = tabs[i];
+                    }
+                }
+            }
+
+            tabs.forEach(id => {
+                const btn = document.getElementById(`tab-btn-${id}`);
+                if (btn) {
+                    if (id === activeId) {
+                        btn.classList.add('active');
+                        btn.setAttribute('aria-selected', 'true');
+                    } else {
+                        btn.classList.remove('active');
+                        btn.setAttribute('aria-selected', 'false');
+                    }
+                }
+            });
+
+            // 2. Lazy Chart Rendering as sections enter viewport
+            tabs.forEach(id => {
+                const el = document.getElementById(id);
+                if (el) {
+                    const rect = el.getBoundingClientRect();
+                    if (rect.top < viewportHeight - 100 && rect.bottom > 100) {
+                        renderTabCharts(id);
+                    }
+                }
+            });
+        });
     </script>
 </body>
 </html>
