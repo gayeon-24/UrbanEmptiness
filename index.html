@@ -292,6 +292,7 @@
         #home {
             justify-content: flex-start;
             align-items: flex-start;
+            padding-top: 80px !important;
             padding-left: 10%;
             padding-right: 10%;
             padding-bottom: 150px !important;
@@ -300,6 +301,7 @@
 
         @media (max-width: 900px) {
             #home {
+                padding-top: 64px !important;
                 padding-left: 24px !important;
                 padding-right: 24px !important;
                 padding-bottom: 100px !important;
@@ -309,10 +311,10 @@
         .home-content-wrap {
             max-width: 700px;
             z-index: 2;
-            min-height: calc(100vh - 220px);
             display: flex;
             flex-direction: column;
-            justify-content: center;
+            justify-content: flex-start;
+            margin-bottom: 16px;
         }
 
         .home-tag {
@@ -324,7 +326,7 @@
             padding: 8px 18px;
             border-radius: 30px;
             border: 1px solid var(--border);
-            margin-bottom: 28px;
+            margin-bottom: 16px;
             display: inline-flex;
             align-items: center;
             gap: 8px;
@@ -347,12 +349,12 @@
 
         .home-title {
             font-family: var(--font-display);
-            font-size: 5.2rem;
+            font-size: 2.2rem;
             font-weight: 800;
-            line-height: 1.05;
+            line-height: 1.15;
             letter-spacing: -0.04em;
             color: var(--text);
-            margin-bottom: 24px;
+            margin-bottom: 12px;
         }
 
         .home-title span {
@@ -368,10 +370,10 @@
         }
 
         .home-desc {
-            font-size: 1.05rem;
+            font-size: 0.88rem;
             color: var(--muted);
             max-width: 520px;
-            line-height: 1.7;
+            line-height: 1.6;
             font-weight: 400;
         }
 
@@ -1175,7 +1177,7 @@
             }
 
             .home-title {
-                font-size: 3.5rem;
+                font-size: 1.8rem;
             }
 
             .about-grid {
@@ -1213,7 +1215,7 @@
 
         @media (max-width: 600px) {
             .home-title {
-                font-size: 2.8rem;
+                font-size: 1.4rem;
             }
 
             .metrics {
@@ -1254,7 +1256,7 @@
             </div>
 
             <!-- 01 / TEAM MEMBERS SECTION (WORK) -->
-            <div id="home-work" style="width: 100%; margin-top: 100px; max-width: 1200px;">
+            <div id="home-work" style="width: 100%; margin-top: 24px; max-width: 1200px;">
                 <div class="sec-head">
                     <div class="sec-tag">01 / TEAM MEMBERS</div>
                     <h2 class="sec-title">개별 결과물 아카이브</h2>
@@ -1264,51 +1266,51 @@
                     <div class="work-card" style="cursor: pointer;" onclick="window.open('https://qsyqsy1231-del.github.io/-/', '_blank')">
                         <div class="work-meta">
                             <p class="sec-tag">MEMBER 01</p>
-                            <h3 class="work-name">박소율</h3>
-                            <p class="work-role">청파·당산의 상권 이탈 기반 인터랙티브 맵</p>
+                            <h3 class="work-name">공백의 지도</h3>
+                            <p class="work-role">박소율<br>청파·당산의 상권 이탈 기반 인터랙티브 맵</p>
                         </div>
-                        <a href="https://qsyqsy1231-del.github.io/-/" class="work-link" target="_blank" rel="noopener noreferrer" aria-label="박소율 결과물 바로가기" onclick="event.stopPropagation();">↗</a>
+                        <a href="https://qsyqsy1231-del.github.io/-/" class="work-link" target="_blank" rel="noopener noreferrer" aria-label="공백의 지도 결과물 바로가기" onclick="event.stopPropagation();">↗</a>
                     </div>
-                    <div class="work-card" style="cursor: pointer;" onclick="location.href='#member-02'">
+                    <div class="work-card" style="cursor: pointer;" onclick="window.open('https://www.figma.com/proto/uMMhimGT3V3WYmvSfGHZLc/%EA%B0%9C%EC%9D%B8-%EA%B3%BC%EC%A0%9C?node-id=555-50&amp;viewport=1046%2C-2338%2C0.14&amp;t=fNOUc4STjGK61bGf-1&amp;scaling=scale-down&amp;content-scaling=fixed&amp;starting-point-node-id=549%3A28&amp;show-proto-sidebar=1&amp;page-id=21%3A2', '_blank')">
                         <div class="work-meta">
                             <p class="sec-tag">MEMBER 02</p>
-                            <h3 class="work-name">류다경</h3>
-                            <p class="work-role">폐관 극장 현황 기반 관람 문화 변화 시각화</p>
+                            <h3 class="work-name">사라지는 극장</h3>
+                            <p class="work-role">류다경<br>폐관 극장 현황 기반 관람 문화 변화 시각화</p>
                         </div>
-                        <a href="#member-02" class="work-link" aria-label="류다경 결과물 바로가기" onclick="event.stopPropagation();">↗</a>
+                        <a href="https://www.figma.com/proto/uMMhimGT3V3WYmvSfGHZLc/%EA%B0%9C%EC%9D%B8-%EA%B3%BC%EC%A0%9C?node-id=555-50&amp;viewport=1046%2C-2338%2C0.14&amp;t=fNOUc4STjGK61bGf-1&amp;scaling=scale-down&amp;content-scaling=fixed&amp;starting-point-node-id=549%3A28&amp;show-proto-sidebar=1&amp;page-id=21%3A2" class="work-link" target="_blank" rel="noopener noreferrer" aria-label="사라지는 극장 결과물 바로가기" onclick="event.stopPropagation();">↗</a>
                     </div>
                     
                     <div class="work-card" style="cursor: pointer;" onclick="window.open('https://www.figma.com/proto/p1n9JrhfQrpN4EnbG8MKY1/%EB%8D%B0%EC%9D%B4%ED%84%B0%EC%8B%9C%EA%B0%81%ED%99%94%EC%99%80%EC%A0%95%EB%B3%B4%EB%94%94%EC%9E%90%EC%9D%B8_%EA%B9%80%EC%84%9C%EC%9B%90?node-id=0-1&amp;t=FMWZAqqqTKAbuQHS-1', '_blank')">
                         <div class="work-meta">
                             <p class="sec-tag">MEMBER 03</p>
-                            <h3 class="work-name">김서원</h3>
-                            <p class="work-role">전라남도 빈집 현황 기반 공간 소멸 시각화</p>
+                            <h3 class="work-name">비어가는 집, 사라지는 마을</h3>
+                            <p class="work-role">김서원<br>전라남도 빈집 현황 기반 공간 소멸 시각화</p>
                         </div>
-                        <a href="https://www.figma.com/proto/p1n9JrhfQrpN4EnbG8MKY1/%EB%8D%B0%EC%9D%B4%ED%84%B0%EC%8B%9C%EA%B0%81%ED%99%94%EC%99%80%EC%A0%95%EB%B3%B4%EB%94%94%EC%9E%90%EC%9D%B8_%EA%B9%80%EC%84%9C%EC%9B%90?node-id=0-1&amp;t=FMWZAqqqTKAbuQHS-1" class="work-link" target="_blank" rel="noopener noreferrer" aria-label="김서원 결과물 바로가기" onclick="event.stopPropagation();">↗</a>
+                        <a href="https://www.figma.com/proto/p1n9JrhfQrpN4EnbG8MKY1/%EB%8D%B0%EC%9D%B4%ED%84%B0%EC%8B%9C%EA%B0%81%ED%99%94%EC%99%80%EC%A0%95%EB%B3%B4%EB%94%94%EC%9E%90%EC%9D%B8_%EA%B9%80%EC%84%9C%EC%9B%90?node-id=0-1&amp;t=FMWZAqqqTKAbuQHS-1" class="work-link" target="_blank" rel="noopener noreferrer" aria-label="비어가는 집, 사라지는 마을 결과물 바로가기" onclick="event.stopPropagation();">↗</a>
                     </div>
                     
                     <div class="work-card" style="cursor: pointer;" onclick="window.open('https://ontheedgeofextinction.lovable.app', '_blank')">
                         <div class="work-meta">
                             <p class="sec-tag">MEMBER 04</p>
-                            <h3 class="work-name">이하윤</h3>
-                            <p class="work-role">아이들이 사라진 자리에 남겨진, 전국 미활용 폐교 리서치</p>
+                            <h3 class="work-name">절벽 끝의 학교들</h3>
+                            <p class="work-role">이하윤<br>아이들이 사라진 자리에 남겨진, 전국 미활용 폐교 리서치</p>
                         </div>
-                        <a href="https://ontheedgeofextinction.lovable.app" class="work-link" target="_blank" rel="noopener noreferrer" aria-label="이하윤 결과물 바로가기" onclick="event.stopPropagation();">↗</a>
+                        <a href="https://ontheedgeofextinction.lovable.app" class="work-link" target="_blank" rel="noopener noreferrer" aria-label="절벽 끝의 학교들 결과물 바로가기" onclick="event.stopPropagation();">↗</a>
                     </div>
                     
                     <div class="work-card" style="cursor: pointer;" onclick="window.open('https://www.figma.com/proto/bTmI2T108PSvDQhsUdYElR/%EB%8D%B0%EC%8B%9C%EC%A0%95_%EA%B0%9C%EC%9D%B8?node-id=76-251&amp;t=PfaPr3nw8cV0BMo6-1', '_blank')">
                         <div class="work-meta">
                             <p class="sec-tag">MEMBER 05</p>
-                            <h3 class="work-name">이가연</h3>
-                            <p class="work-role">빈집 서울<br>서울시 빈집 아카이브</p>
+                            <h3 class="work-name">빈집 서울</h3>
+                            <p class="work-role">이가연<br>서울시 빈집 아카이브</p>
                         </div>
-                        <a href="https://www.figma.com/proto/bTmI2T108PSvDQhsUdYElR/%EB%8D%B0%EC%8B%9C%EC%A0%95_%EA%B0%9C%EC%9D%B8?node-id=76-251&amp;t=PfaPr3nw8cV0BMo6-1" class="work-link" target="_blank" rel="noopener noreferrer" aria-label="이가연 결과물 바로가기" onclick="event.stopPropagation();">↗</a>
+                        <a href="https://www.figma.com/proto/bTmI2T108PSvDQhsUdYElR/%EB%8D%B0%EC%8B%9C%EC%A0%95_%EA%B0%9C%EC%9D%B8?node-id=76-251&amp;t=PfaPr3nw8cV0BMo6-1" class="work-link" target="_blank" rel="noopener noreferrer" aria-label="빈집 서울 결과물 바로가기" onclick="event.stopPropagation();">↗</a>
                     </div>
                 </div>
             </div>
 
             <!-- 02 / OVERVIEW SECTION (ABOUT) -->
-            <div id="home-about" style="width: 100%; margin-top: 100px; max-width: 1200px; margin-bottom: 0;">
+            <div id="home-about" style="width: 100%; margin-top: 80px; max-width: 1200px; margin-bottom: 0;">
                 <div class="sec-head">
                     <div class="sec-tag">02 / OVERVIEW</div>
                     <h2 class="sec-title">프로젝트 소개</h2>
